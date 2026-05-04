@@ -442,7 +442,12 @@ namespace OpenSkinDesigner.Logic
                     {
                         if (myXmlNode.Attributes[color] != null)
                         {
-                            if (myXmlNode.Attributes[color].Value[0] == '#')
+                            // Do not treat gradient values as a single color.
+                        // Valid Enigma2 syntax can be: backgroundColor="#00101010,#00303030,vertical".
+                        if (myXmlNode.Attributes[color].Value.Contains(","))
+                            continue;
+
+                        if (myXmlNode.Attributes[color].Value[0] == '#')
                             {                                                        
                                 if (Properties.Settings.Default.DontReplaceColors == false)                                   
                                 {
@@ -519,8 +524,14 @@ namespace OpenSkinDesigner.Logic
 
             public override Object get(String name)
             {
-                if (name == "(none)")
+                if (String.IsNullOrEmpty(name) || name == "(none)")
                     return null;
+
+                // A comma-separated value is a gradient, not a color name/hex literal.
+                // Let sGradient parse values like: #00101010,#00303030,vertical
+                if (name.Contains(","))
+                    return null;
+
                 if (name[0] == '#')
                 {                                       
                     // if (MyGlobaleVariables.AddUndefinedColor == "#")
