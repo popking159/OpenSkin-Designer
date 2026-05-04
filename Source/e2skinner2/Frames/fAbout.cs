@@ -17,11 +17,19 @@ namespace OpenSkinDesigner.Frames
             SetLanguage();
             this.Text = String.Format(fMain.GetTranslation("Information about") + " {0}", AssemblyTitle);
             this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
+            this.labelVersion.Text = String.Format("Version v{0}", AssemblyVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyCompany;
             this.textBoxDescription.Text = AssemblyDescription + Environment.NewLine +
                 Environment.NewLine + "Changelog:" + Environment.NewLine + Environment.NewLine +
+                "v4.2.0.0 MOD by odem2014" + Environment.NewLine +
+                "- Added support for eLabel backgroundColor gradients using start,end,direction syntax" + Environment.NewLine +
+                "- Fixed saving of backgroundColor=\"#00101010,#00303030,vertical\"" + Environment.NewLine +
+                "- Fixed saving of backgroundColor=\"red,green,vertical\"" + Environment.NewLine +
+                "- Fixed saving of backgroundColor=\"#00ff0000,#0000ff00,vertical\"" + Environment.NewLine +
+                "- Added support for cornerRadius edge masks like 30;topLeft,topRight" + Environment.NewLine +
+                "- Fixed preview rendering so cornerRadius masks only round the selected corners" + Environment.NewLine +
+                "- Preserved extended cornerRadius values when loading and saving skin XML" + Environment.NewLine + Environment.NewLine +
                 "v3.1.0.0 by Jason Hood" + Environment.NewLine +
                 "- Add the GPLv3 license file" + Environment.NewLine +
                 "- Replace 'Suchen' with 'Search'" + Environment.NewLine +
