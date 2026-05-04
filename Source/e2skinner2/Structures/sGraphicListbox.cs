@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -12,20 +12,86 @@ namespace OpenSkinDesigner.Structures
     class sGraphicListbox : sGraphicElement
     {
 
-        // ############################################
-        private int scrollbarAbsolutX;
-        private int scrollbarAbsolutY;
-        private int scrollbarBreite;
-        private int scrollbarHeight;
-       
-        // ############################################
-
         //protected sAttributeListbox pAttr;
 
         public sGraphicListbox(sAttributeListbox attr)
             : base(attr)
         {
             pAttr = attr;
+        }
+
+
+        private void PaintScrollbar(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            sAttributeListbox attr = (sAttributeListbox)pAttr;
+
+            if (attr.pScrollbarMode == cProperty.eScrollbarMode.showNever)
+                return;
+
+            int scrollbarWidth = attr.pscrollbarWidth > 0 ? attr.pscrollbarWidth : 10;
+            int scrollbarOffset = attr.pscrollbarOffset > 0 ? attr.pscrollbarOffset : 0;
+            int scrollbarBorderWidth = attr.pscrollbarSliderBorderWidth > 0 ? attr.pscrollbarSliderBorderWidth : 1;
+            int scrollbarRadius = attr.pscrollbarRadius > 0 ? attr.pscrollbarRadius : 0;
+
+            int trackX = pAttr.pAbsolutX + pAttr.pWidth - scrollbarWidth - scrollbarOffset;
+            int trackY = pAttr.pAbsolutY;
+            int trackWidth = scrollbarWidth;
+            int trackHeight = pAttr.pHeight;
+
+            if (trackWidth <= 0 || trackHeight <= 0)
+                return;
+
+            sColor trackColor = attr.pscrollbarSliderBackgroundColor;
+            if (trackColor == null)
+                trackColor = attr.pListboxBackgroundColor;
+            if (trackColor == null)
+                trackColor = attr.pListboxForegroundColor;
+
+            // Draw the scrollbar track/background.
+            if (attr.pScrollbarBackgroundPicture != null)
+            {
+                new sGraphicImage(null, attr.pScrollbarBackgroundPictureName, trackX, trackY, trackWidth, trackHeight).paint(sender, e);
+            }
+            else if (!pAttr.pTransparent && trackColor != null)
+            {
+                new sGraphicRectangel(trackX, trackY, trackWidth, trackHeight, true, 1.0F, trackColor)
+                    .withCornerRadius(scrollbarRadius)
+                    .paint(sender, e);
+            }
+
+            // Draw a representative scrollbar thumb. The designer does not know the real scroll
+            // position, so preview the thumb at the top using 3/4 of the track height.
+            int thumbX = trackX;
+            int thumbY = trackY;
+            int thumbWidth = trackWidth;
+            int thumbHeight = Math.Max(1, trackHeight * 3 / 4);
+
+            if (attr.pScrollbarForegroundGradient != null)
+            {
+                new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, attr.pScrollbarForegroundGradient)
+                    .withCornerRadius(scrollbarRadius)
+                    .paint(sender, e);
+            }
+            else
+            {
+                sColor thumbColor = attr.pscrollbarSliderForegroundColor;
+                if (thumbColor == null)
+                    thumbColor = attr.pListboxForegroundColor;
+
+                if (thumbColor != null)
+                {
+                    new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, true, 1.0F, thumbColor)
+                        .withCornerRadius(scrollbarRadius)
+                        .paint(sender, e);
+                }
+            }
+
+            if (attr.pscrollbarSliderBorderColor != null && scrollbarBorderWidth > 0)
+            {
+                new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, false, (float)scrollbarBorderWidth, attr.pscrollbarSliderBorderColor)
+                    .withCornerRadius(scrollbarRadius)
+                    .paint(sender, e);
+            }
         }
 
         
@@ -270,102 +336,8 @@ namespace OpenSkinDesigner.Structures
                         }
                     }
                     // ---------------------------------------- Scrollbar -----------------------------------------------------------------------------
-                    if (((sAttributeListbox)pAttr).pScrollbarMode != cProperty.eScrollbarMode.showNever)
-                    {
-                        if (((sAttributeListbox)pAttr).pscrollbarSliderBackgroundColor != null)
-                        {
-                            // farbe vorhanden
-                        }
-                        else
-                        {
-                            ((sAttributeListbox)pAttr).pscrollbarSliderBackgroundColor = ((sAttributeListbox)pAttr).pListboxForegroundColor;
-
-                        }
-
-                        if (((sAttributeListbox)pAttr).pscrollbarWidth > 0)
-                        {
-                            // wert vorhanden
-                        }
-                        else
-                        {
-                            ((sAttributeListbox)pAttr).pscrollbarWidth = 10;
-
-                        }
-
-                        if (((sAttributeListbox)pAttr).pscrollbarOffset > 0)
-                        {
-                            // wert vorhanden
-                        }
-                        else
-                        {
-                            ((sAttributeListbox)pAttr).pscrollbarOffset = 10;
-
-                        }
-
-                        scrollbarAbsolutX = pAttr.pAbsolutX + pAttr.pWidth - ((sAttributeListbox)pAttr).pscrollbarWidth;
-                        scrollbarAbsolutY = pAttr.pAbsolutY + 10;
-                        scrollbarBreite = ((sAttributeListbox)pAttr).pscrollbarWidth;
-                        scrollbarHeight = pAttr.pHeight - 20;
-
-                        // ------------------------------- erst malen wir den Background --------------------------------
-                        if (pAttr.pTransparent)
-                        {
-                            Logger.LogMessage("============= sGraphicProgress - Transparent true - es wird nichts gemalt ");
-                            //new sGraphicRectangel().paint(sender, e);
-                        }
-                        else
-                        {
-                            Logger.LogMessage("============= sGraphicListbox - Srollbar - ruft cGraphicRectangel.cs auf 314  = 7 ");
-                            new sGraphicRectangel(scrollbarAbsolutX, scrollbarAbsolutY, scrollbarBreite, scrollbarHeight, true, 1.0F, ((sAttributeListbox)pAttr).pscrollbarSliderBackgroundColor)
-                            .withCornerRadius(pAttr.pCornerRadius)
-                            .paint(sender, e);
-                        }
-                        if (((sAttributeListbox)pAttr).pScrollbarBackgroundPicture != null)
-
-                        {
-                            // hier image aufrufen
-                            Logger.LogMessage("============= sGraphicListbox - PixmapName - ruft cGraphicImage.cs auf 323  = 7 ");
-                            new sGraphicImage(null, ((sAttributeListbox)pAttr).pScrollbarBackgroundPictureName, scrollbarAbsolutX, scrollbarAbsolutY, scrollbarBreite, scrollbarHeight).paint(sender, e);
-
-                        }
-                        else
-                        {
-                            scrollbarHeight = scrollbarHeight / 4 * 3;
-
-                            if (((sAttributeListbox)pAttr).pScrollbarForegroundGradient != null)
-                            {
-                               
-                                // hier nur 3/4 die scrollbar malen , scrollbarHeight
-                                Logger.LogMessage("============= sGraphicListbox.cs - Gradient ist vorhanden ");
-                                Logger.LogMessage("============= sGraphicListbox - Gradient - ruft cGraphicRectangel.cs auf 336  = 5 mit Gradient ");
-                                new sGraphicRectangel(scrollbarAbsolutX, scrollbarAbsolutY, scrollbarBreite, scrollbarHeight, ((sAttributeListbox)pAttr).pScrollbarForegroundGradient)
-                                    .withCornerRadius(pAttr.pCornerRadius)
-                                    .paint(sender, e);
-
-                            }
-                            else
-                            {
-                                if (((sAttributeListbox)pAttr).pscrollbarSliderForegroundColor != null)
-                                {
-                                    Logger.LogMessage("============= sGraphicListbox - Foreground - ruft cGraphicRectangel.cs auf 346  = 7 ");
-                                    new sGraphicRectangel(scrollbarAbsolutX, scrollbarAbsolutY, scrollbarBreite, scrollbarHeight, true, 1.0F, ((sAttributeListbox)pAttr).pscrollbarSliderForegroundColor)
-                                        .withCornerRadius(pAttr.pCornerRadius)
-                                        .paint(sender, e);
-                                }
-                            }
-
-                        }
-
-                        if (((sAttributeListbox)pAttr).pscrollbarSliderBorderColor != null)
-                        {
-                            Logger.LogMessage("============= sGraphicListbox - Border - ruft cGraphicRectangel.cs auf 357  = 4 ");
-                            new sGraphicRectangel(pAttr, false, (float)pAttr.pBorderWidth, ((sAttributeListbox)pAttr).pscrollbarSliderBorderColor)
-                                .withCornerRadius(pAttr.pCornerRadius)
-                                .paint(sender, e);
-                        }
-
-                    }
-                        // -------------------------------------------------Scrollbar Ende -------------------------------------------------------------------------------
+                    PaintScrollbar(sender, e);
+                    // -------------------------------------------------Scrollbar Ende -------------------------------------------------------------------------------
 
 
                     if (pAttr.pTransparent)

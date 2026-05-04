@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -79,6 +79,7 @@ namespace OpenSkinDesigner.Structures
         public int pscrollbarWidth;
         public int pscrollbarSliderBorderWidth;
         public int pscrollbarOffset;
+        public int pscrollbarRadius;
 
         public sColor pscrollbarSliderBorderColor;
         public sColor pscrollbarSliderForegroundColor;
@@ -423,6 +424,13 @@ namespace OpenSkinDesigner.Structures
                 int.TryParse(value, out pscrollbarOffset);
             }
 
+            if (myNode.Attributes["scrollbarRadius"] != null)
+            {
+                string value = myNode.Attributes["scrollbarRadius"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarRadius: " + value);
+                int.TryParse(value.Split(';')[0].Trim(), out pscrollbarRadius);
+            }
+
             if (myNode.Attributes["scrollbarSliderForegroundColor"] != null)
             {
                 string value = myNode.Attributes["scrollbarSliderForegroundColor"].Value;
@@ -452,6 +460,35 @@ namespace OpenSkinDesigner.Structures
 
                 Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarSliderBorderWidth: " + value);
 
+                int.TryParse(value, out pscrollbarSliderBorderWidth);
+            }
+
+            // Accept both old OpenSkin Designer names and Enigma2-style names.
+            if (pscrollbarSliderForegroundColor == null && myNode.Attributes["scrollbarForegroundColor"] != null)
+            {
+                string value = myNode.Attributes["scrollbarForegroundColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarForegroundColor : " + value);
+                pscrollbarSliderForegroundColor = (sColor)cDataBase.pColors.get(value);
+            }
+
+            if (pscrollbarSliderBackgroundColor == null && myNode.Attributes["scrollbarBackgroundColor"] != null)
+            {
+                string value = myNode.Attributes["scrollbarBackgroundColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBackgroundColor : " + value);
+                pscrollbarSliderBackgroundColor = (sColor)cDataBase.pColors.get(value);
+            }
+
+            if (pscrollbarSliderBorderColor == null && myNode.Attributes["scrollbarBorderColor"] != null)
+            {
+                string value = myNode.Attributes["scrollbarBorderColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBorderColor : " + value);
+                pscrollbarSliderBorderColor = (sColor)cDataBase.pColors.get(value);
+            }
+
+            if (pscrollbarSliderBorderWidth <= 0 && myNode.Attributes["scrollbarBorderWidth"] != null)
+            {
+                string value = myNode.Attributes["scrollbarBorderWidth"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBorderWidth: " + value);
                 int.TryParse(value, out pscrollbarSliderBorderWidth);
             }
 
