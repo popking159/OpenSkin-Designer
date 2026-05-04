@@ -1,0 +1,176 @@
+﻿Language: 语言
+File: 文件
+New: 新建
+Open: 打开
+Save: 保存
+Save as: 另存为
+Close: 关闭
+Exit: 退出
+Edit: 编辑
+Undo: 撤销
+Redo: 重做
+Element: 元素
+Add Label: 添加标签
+Add Pixmap: 添加位图
+Add Widget: 添加控件
+Add Panel: 添加面板
+Delete selected: 删除选定项
+Settings: 设置
+Resolution: 分辨率
+Colors: 颜色
+Fonts: 字体
+WindowStyles: 窗口样式
+Reload converter.xml: 重新加载 converter.xml
+Reload previewText.xml: 重新加载 previewText.xml
+Preferences: 首选项
+Add undefined color with '#' instead of 'un': 使用 '#' 代替 'un' 添加未定义颜色
+Use full attribute-list: 使用完整属性列表
+Set 'Fallback'-Color: 设置“后备”颜色
+Search...: 搜索...
+Designer: 预览界面
+Code: 代码
+Marker: 标记
+Show all: 显示全部
+Show screens: 显示屏幕
+Show labels: 显示标签
+Show pixmaps: 显示位图
+Show panels: 显示面板
+Show widgets: 显示控件
+Alpha: 透明度
+Fading: 渐变
+Conditional widgets: 条件控件
+Random: 随机
+Default: 默认
+None: 无
+Capturing Keyboard Events: 捕获键盘事件
+Cancel: 取消
+OK: 确定
+Open: 打开
+Edit Root: 编辑根元素
+Add Screen: 添加屏幕
+Delete Element: 删除元素
+All: 全部
+No Errors.: 无错误。
+Error: 错误：
+No element selected: 未选择元素
+Sync: 同步
+Fold all: 全部折叠
+Unfold all: 全部展开
+Fold all elements: 折叠所有元素
+Unfold all elements: 展开所有元素
+Color settings: 颜色设置
+Edit colors: 编辑颜色
+Name: 名称
+Value: 值
+Color: 颜色
+Add Element: 添加元素
+current: 当前
+current date: 当前日期
+current time: 当前时间
+colored buttons: 彩色按钮
+Remove: 移除
+Change: 更改
+Red: 红
+Green: 绿
+Blue: 蓝
+Palette: 调色板
+Hints: 提示
+(in decimal, min=0, max=255): （十进制，最小值=0，最大值=255）
+(in hexadecimal): （十六进制）
+The color in the 'listview' can only be displayed without an alpha channel: 列表视图中的颜色仅能显示无透明度通道
+i.e. the color representation is only displayed correctly (with transparency) in the 'picturebox' in the left lower corner!: 即颜色仅在左下方的图片框中正确显示（含透明度）！
+Alpha = transparency! I.e. the more alpha the more transparent the color becomes.: 透明度（Alpha）越高，颜色越透明。
+Information: 信息
+The name of the color cannot be empty!: 颜色名称不能为空！
+The value of the color cannot be empty!: 颜色值不能为空！
+This color already exists!: 颜色已存在！
+You can update this color by pressing the 'Change'-Button.: 点击“更改”按钮可更新颜色。
+Invalid format for value hexadecimal value!: 十六进制值格式无效！
+To do this, you must select a color in the listview!: 请先在列表中选择颜色！
+Invalid format for value alpha!: 透明度值格式无效！
+Invalid format for value red!: 红色值格式无效！
+Invalid format for value blue!: 蓝色值格式无效！
+Invalid format for value green!: 绿色值格式无效！
+You've made some changes, which will only take effect (show the color in the treeview): 您所做的更改需保存并重新加载皮肤后生效（在树视图中显示颜色）。
+after you have saved and reloaded the skin!:
+Do you want to save and reload the skin now?: 是否立即保存并重新加载皮肤？
+Remember, however, that this will also save all previous changes you made!: 注意：此操作将保存所有未保存的更改！
+Save and reload: 保存并重新加载
+Information about: 相关信息
+Path: 路径
+Scale: 缩放
+Size: 尺寸
+Replacement: 替换
+isAlias: 别名
+Filename: 文件名
+Preview fonts: 预览字体
+Usage: 用法
+Font: 字体
+This is a preview-text to show the font: 字体预览文本：
+Test-String SKY 1234567890 !#?ÜÖÄ$%/(): 测试字符串 SKY 1234567890 !#?ÜÖÄ$%/()
+To be able to show this preview, the font size: 为显示预览，字体大小已
+was temporarily changed from 0 to 20: 临时从 0 调整为 20
+Font painting failed!: 字体渲染失败！
+The font: 字体
+was not found.: 未找到。
+Probably this is a default font on the image of your box: 可能是设备镜像中的默认字体。
+Warning: 警告
+This function is not sufficiently tested and seems unstable. It is not recommended to use it!: 此功能未经充分测试且可能不稳定，不建议使用！
+Note: 注意：
+The skin will be automatically saved if you want to continue!: 继续操作将自动保存皮肤！
+It is recommend to create a backup of your skin first!: 建议先备份当前皮肤！
+Press 'Cancel' to abort.: 按“取消”中止。
+Resolution settings: 分辨率设置
+Choose the resolution: 选择分辨率
+Resolution: 分辨率
+Changing the Resolution will result in rescaling of the skin.: 更改分辨率将重新缩放皮肤。
+PNG not found: 未找到 PNG 文件
+More than one color defined with name: 存在重复颜色名称
+The second definition will be deleted if you save manually.: 手动保存时将删除重复定义。
+Until you save, the second definition is still shown in TreeView!: 保存前，TreeView 仍显示重复项！
+Do you want to save and reload the skin?: 你想保存并重新加载皮肤吗？
+Error while parsing color table: 解析颜色表时出错
+Error while parsing font table: 解析字体表时出错
+More than one font (alias) defined with name: 存在重复字体（别名）名称
+More than one font defined with name: 存在重复字体名称
+Show this message again?: 再次显示此消息？
+is not defined or exist!: 未定义或不存在！
+Using 'fallback font': 使用后备字体
+Using 'fallback color': 使用后备颜色
+Error: 错误
+Open project: 打开项目
+No skin selected: 未选择皮肤
+Open: 打开
+Window-Style settings: 窗口样式设置
+Style: 样式
+Preview: 预览
+Table: 表格
+View: 视图
+Key: 键
+Result: 结果
+No text to browse!: 无文本可浏览！
+Continue: 继续
+You have unsaved changes. Do you want to continue anyway?: 存在未保存更改，是否继续？
+You have made changes in the editor. Do you want to continue anyway?: 编辑器存在未保存更改，是否继续？
+Add: 添加
+OpenSkinDesigner has searched in several places for the font: OpenSkinDesigner 已搜索以下路径查找字体：
+Unfortunately the search was not successful!: 未能找到该字体！
+Search locations: 搜索路径：
+It uses 'lcd.ttf' instead.: 已改用 'lcd.ttf'。
+Error while loading fonts: 加载字体时出错
+OpenSkinDesigner has tried to open the font: OpenSkinDesigner 尝试打开字体：
+Unfortunately this was not successful!: 操作失败！
+Either the font type is not supported by OpenSkinDesigner: OpenSkinDesigner 不支持该字体类型
+or it's not a valid font.: 或字体文件无效。
+Location: 位置
+Notification of unsaved changes: 未保存更改通知
+Notification of unsaved changes in editor: 编辑器未保存更改通知
+Deleting main node is not allowed!: 禁止删除主节点！
+Experimental delete-mode: 实验性删除模式
+Rename: 重命名
+The second definition will be deleted!: 第二种定义的颜色被删除!
+Linewrapping: 自动换行
+Dont replace colors beginning with '#': 不替换以 '#' 开头的颜色
+Show attribut-list: 显示属性列表
+Use full attribut-list: 使用完整的属性列表
+An invalid color was specified!: 指定了无效颜色！
