@@ -1,5 +1,6 @@
-OpenSkin Designer
-=================
+OpenSkin Designer MOD by odem2014
+=====================================
+[![MOD Version](https://img.shields.io/badge/MOD-v4.2.0.0-blue.svg)](#changelog)
 [![GitHub release](https://img.shields.io/github/release/Humaxx/OpenSkin-Designer.svg)](https://github.com/Humaxx/OpenSkin-Designer/releases)
 [![GitHub All Releases](https://img.shields.io/github/downloads/Humaxx/OpenSkin-Designer/total.svg)](https://github.com/Humaxx/OpenSkin-Designer/releases)
 [![GitHub Releases (by Release)](https://img.shields.io/github/downloads/Humaxx/OpenSkin-Designer/3.3.0/total.svg)](https://github.com/Humaxx/OpenSkin-Designer/releases)
@@ -8,7 +9,7 @@ OpenSkin Designer
 [![GitHub Releases (by Release)](https://img.shields.io/github/downloads/Humaxx/OpenSkin-Designer/3.2.3/total.svg)](https://github.com/Humaxx/OpenSkin-Designer/releases)
 [![GitHub Releases (by Release)](https://img.shields.io/github/downloads/Humaxx/OpenSkin-Designer/3.2.0/total.svg)](https://github.com/Humaxx/OpenSkin-Designer/releases)
 
-OpenSkin Designer is a further development of [e2skinner](https://code.google.com/p/e2skinner2/).
+OpenSkin Designer MOD by odem2014 is based on OpenSkin Designer, a further development of [e2skinner](https://code.google.com/p/e2skinner2/). This MOD continues from the stable 4.2.0.0 feature set.
 
 It includes a couple of new features i.e.:
 * includes
@@ -23,6 +24,24 @@ It includes a couple of new features i.e.:
 * position replacement to 'center' disabled
 * bugfixes
 * etc.
+
+## MOD v4.2.0.0 highlights
+
+This MOD focuses on compatibility with newer Enigma2 skin syntax while keeping the original OpenSkin Designer workflow.
+
+Added/updated support includes:
+* `eLabel` `backgroundColor` gradients using 3-part syntax: `startColor,endColor,direction`
+* HEX gradient values such as `backgroundColor="#00101010,#00303030,vertical"`
+* Named-color gradients such as `backgroundColor="red,green,vertical"`
+* `cornerRadius` masks such as `cornerRadius="30;topLeft,topRight"`
+* Correct saving of raw gradient and corner-radius mask values without reducing them to simple colors/numbers
+* Preview rendering that respects partial rounded corners, for example top-left and top-right only
+
+Example:
+
+```xml
+<eLabel position="100,100" size="300,80" text="Gradient label" backgroundColor="#00101010,#00303030,vertical" cornerRadius="30;topLeft,topRight" />
+```
 
 ## Notes
 
@@ -47,6 +66,17 @@ this.textBoxEditor2.Styles.Max.FontName = "Verdana\0\0\0\0\0\0\0\0\0\0\0\0\0";
 </p>
 
 ## Changelog
+
+### v4.2.0.0 MOD by odem2014
+created by [odem2014](https://github.com/odem2014)
+* Updated application title/version to `OpenSkin Designer MOD by odem2014 v4.2.0.0`.
+* Added support for `eLabel` `backgroundColor` gradients written as `startColor,endColor,direction`.
+* Added support for HEX gradient syntax, including `#00101010,#00303030,vertical` and `#00ff0000,#0000ff00,vertical`.
+* Added support for named-color gradients, for example `red,green,vertical`.
+* Fixed color parsing so comma-separated gradient values are not treated as invalid single colors.
+* Added support for preserving extended `cornerRadius` values such as `30;topLeft,topRight`.
+* Fixed saving so gradient `backgroundColor` and masked `cornerRadius` values round-trip correctly.
+* Fixed preview rendering so `cornerRadius` edge masks are shown correctly instead of rounding all four corners.
 
 ### 3.2.0.0 (08.04.2019)
 created by [Scrounger](https://github.com/Scrounger)
