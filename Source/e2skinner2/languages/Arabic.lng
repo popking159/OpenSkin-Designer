@@ -1,0 +1,175 @@
+﻿Language: العربية
+File: ملف
+New: جديد
+Open: فتح
+Save: حفظ
+Save as: حفظ باسم
+Close: إغلاق
+Exit: خروج
+Edit: تحرير
+Undo: تراجع
+Redo: إعادة
+Element: عنصر
+Add Label: إضافة Label
+Add Pixmap: إضافة Pixmap
+Add Widget: إضافة Widget
+Add Panel: إضافة Panel
+Delete selected: حذف المحدد
+Settings: الإعدادات
+Resolution: الدقة
+Colors: الألوان
+Fonts: الخطوط
+WindowStyles: أنماط النوافذ
+Reload converter.xml: إعادة تحميل converter.xml
+Reload previewText.xml: إعادة تحميل previewText.xml
+Preferences: التفضيلات
+Add undefined color with '#' instead of 'un': إضافة اللون غير المعرّف بـ '#' بدلاً من 'un'
+Use full attribut-list: استخدام قائمة السمات الكاملة
+Set 'Fallback'-Color: تعيين لون 'Fallback'
+Search...: بحث...
+Designer: المصمم
+Code: الكود
+Marker: علامة
+Show all: عرض الكل
+Show screens: عرض الشاشات
+Show labels: عرض Labels
+Show pixmaps: عرض Pixmaps
+Show panels: عرض Panels
+Show widgets: عرض Widgets
+Alpha: ألفا
+Fading: التلاشي
+Conditional widgets: Widgets شرطية
+Random: عشوائي
+Default: افتراضي
+None: لا شيء
+Capturing Keyboard Events: التقاط أحداث لوحة المفاتيح
+Cancel: إلغاء
+OK: موافق
+Open: فتح
+Edit Root: تحرير الجذر
+Add Screen: إضافة شاشة
+Delete Element: حذف العنصر
+All: الكل
+No Errors.: لا توجد أخطاء.
+Error:: خطأ:
+No element selected: لم يتم تحديد أي عنصر
+Sync: مزامنة
+Fold all: طي الكل
+Unfold all: توسيع الكل
+Fold all elements: طي كل العناصر
+Unfold all elements: توسيع كل العناصر
+Color settings: إعدادات الألوان
+Edit colors: تحرير الألوان
+Name: الاسم
+Value: القيمة
+Color: اللون
+Add Element: إضافة عنصر
+current: الحالي
+current date: التاريخ الحالي
+current time: الوقت الحالي
+colored buttons: الأزرار الملونة
+Remove: إزالة
+Change: تغيير
+Red: أحمر
+Green: أخضر
+Blue: أزرق
+Palette: لوحة الألوان
+Hints: تلميحات
+(in decimal, min=0, max=255): (بالنظام العشري، الأدنى=0، الأقصى=255)
+(in hexadecimal): (بالنظام الست عشري)
+The color in the 'listview' can only be displayed without an alpha channel,: لا يمكن عرض اللون في 'listview' إلا بدون قناة ألفا،
+i.e. the color representation is only displayed correctly (with transparency) in the 'picturebox' in the left lower corner!: أي أن تمثيل اللون لا يظهر بشكل صحيح مع الشفافية إلا في 'picturebox' في الزاوية اليسرى السفلية!
+Alpha = transparency! I.e. the more alpha the more transparent the color becomes.: ألفا = الشفافية! أي كلما زادت قيمة ألفا زادت شفافية اللون.
+Information: معلومات
+The name of the color cannot be empty!: لا يمكن أن يكون اسم اللون فارغاً!
+The value of the color cannot be empty!: لا يمكن أن تكون قيمة اللون فارغة!
+This color already exists!: هذا اللون موجود بالفعل!
+You can update this color by pressing the 'Change'-Button.: يمكنك تحديث هذا اللون بالضغط على زر 'Change'.
+Invalid format for value hexadecimal value!: صيغة غير صحيحة للقيمة الست عشرية!
+To do this, you must select a color in the listview!: للقيام بذلك يجب اختيار لون من listview!
+Invalid format for value alpha!: صيغة غير صحيحة لقيمة ألفا!
+Invalid format for value red!: صيغة غير صحيحة لقيمة الأحمر!
+Invalid format for value blue!: صيغة غير صحيحة لقيمة الأزرق!
+Invalid format for value green!: صيغة غير صحيحة لقيمة الأخضر!
+You've made some changes, which will only take effect (show the color in the treeview),: لقد أجريت بعض التغييرات، ولن يتم تطبيقها إلا بعد إظهار اللون في treeview،
+after you have saved and reloaded the skin!: بعد حفظ السكن وإعادة تحميله!
+Do you want to save and reload the skin now?: هل تريد حفظ السكن وإعادة تحميله الآن؟
+Remember, however, that this will also save all previous changes you made!: تذكّر أن هذا سيحفظ أيضاً كل التغييرات السابقة التي أجريتها!
+Save and reload: حفظ وإعادة تحميل
+Information about: معلومات حول
+Path: المسار
+Scale: التحجيم
+Size: الحجم
+Replacement: استبدال
+isAlias: هو Alias
+Filename: اسم الملف
+Preview fonts: معاينة الخطوط
+Usage: الاستخدام
+Font: الخط
+This is a preview-text to show the font: هذا نص معاينة لعرض الخط
+Test-String SKY 1234567890 !#?ÜÖÄ$%/(): Test-String SKY 1234567890 !#?ÜÖÄ$%/()
+To be able to show this preview, the font size: لكي يمكن عرض هذه المعاينة، تم تغيير حجم الخط
+was temporarily changed from 0 to 20: مؤقتاً من 0 إلى 20
+Font painting failed!: فشل رسم الخط!
+The font: الخط
+was not found.: لم يتم العثور عليه.
+Probably this is a default font on the image of your box: غالباً هذا خط افتراضي في صورة جهازك
+Warning: تحذير
+This function is not sufficiently tested and seems unstable. It is not recommended to use it!: هذه الوظيفة لم تُختبر بشكل كافٍ وتبدو غير مستقرة. لا يُنصح باستخدامها!
+Note:: ملاحظة:
+The skin will be automatically saved if you want to continue!: سيتم حفظ السكن تلقائياً إذا أردت المتابعة!
+It is recommend to create a backup of your skin first!: يُنصح بإنشاء نسخة احتياطية من السكن أولاً!
+Press 'Cancel' to abort.: اضغط 'Cancel' للإلغاء.
+Resolution settings: إعدادات الدقة
+Choose the resolution: اختر الدقة
+Resolution: الدقة
+Changing the Resolution will result in rescaling of the skin.: تغيير الدقة سيؤدي إلى إعادة تحجيم السكن.
+PNG not found: لم يتم العثور على PNG
+More than one color defined with name: يوجد أكثر من لون معرّف بهذا الاسم
+The second definition will be deleted if you save manually.: سيتم حذف التعريف الثاني إذا قمت بالحفظ يدوياً.
+Until you save, the second definition is still shown in TreeView!: حتى تحفظ، سيظل التعريف الثاني ظاهراً في TreeView!
+Do you want to save and reload the skin?: هل تريد حفظ السكن وإعادة تحميله؟
+Error while parsing color table: خطأ أثناء قراءة جدول الألوان
+Error while parsing font table: خطأ أثناء قراءة جدول الخطوط
+More than one font (alias) defined with name: يوجد أكثر من خط Alias معرّف بهذا الاسم
+More than one font defined with name: يوجد أكثر من خط معرّف بهذا الاسم
+Show this message again?: هل تريد عرض هذه الرسالة مرة أخرى؟
+is not defined or exist!: غير معرّف أو غير موجود!
+Using 'fallback font': سيتم استخدام خط 'fallback'
+Using 'fallback color': سيتم استخدام لون 'fallback'
+Error: خطأ
+Open project: فتح مشروع
+No skin selected: لم يتم اختيار Skin
+Open: فتح
+Window-Style settings: إعدادات نمط النافذة
+Style: النمط
+Preview: معاينة
+Table: جدول
+View: عرض
+Key: المفتاح
+Result: النتيجة
+No text to browse!: لا يوجد نص للتصفح!
+Continue: متابعة
+You have unsafed changes. Do you want to continue anyway?: لديك تغييرات غير محفوظة. هل تريد المتابعة على أي حال؟
+You have made changes in the editor. Do you want to continue anyway?: لقد أجريت تغييرات في محرر الكود. هل تريد المتابعة على أي حال؟
+Add: إضافة
+OpenSkinDesigner has searched in several places for the font: بحث OpenSkinDesigner في عدة أماكن عن الخط
+Unfortunatly the search was not successful!: للأسف لم ينجح البحث!
+Search locations: مواقع البحث
+It uses 'lcd.tff' instead.: سيتم استخدام 'lcd.ttf' بدلاً منه.
+Error while loading fonts: خطأ أثناء تحميل الخطوط
+OpenSkinDesigner has tried to open the font: حاول OpenSkinDesigner فتح الخط
+Unfortunatly this was not successful!: للأسف لم ينجح ذلك!
+Either the font type is not supported by OpenSkinDesigner: إما أن نوع الخط غير مدعوم من OpenSkinDesigner
+or it's not a valid font.: أو أنه ليس خطاً صالحاً.
+Location: الموقع
+Notification of unsaved changes: تنبيه بوجود تغييرات غير محفوظة
+Notification of unsaved changes in editor: تنبيه بوجود تغييرات غير محفوظة في محرر الكود
+Deleting main node is not allowed!: لا يُسمح بحذف العقدة الرئيسية!
+Experimental delete-mode: وضع الحذف التجريبي
+Rename: إعادة تسمية
+The second definition will be deleted!: سيتم حذف التعريف الثاني!
+Linewrapping: التفاف الأسطر
+Dont replace colors beginning with '#': لا تستبدل الألوان التي تبدأ بـ '#'
+An invalid colour was specified!: تم تحديد لون غير صالح!
+Show attribut-list: عرض قائمة السمات
