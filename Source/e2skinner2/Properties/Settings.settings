@@ -26,13 +26,19 @@
     <Setting Name="ExperimentalDelete" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+<<<<<<< HEAD
+=======
     <Setting Name="LineWrapping" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+>>>>>>> 6c2ae056ee37a6ec7189f860c521324ca8938687
     <Setting Name="DontReplaceColors" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="showAttributList" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LineWrapping" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
