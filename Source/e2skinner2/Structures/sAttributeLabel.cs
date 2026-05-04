@@ -25,6 +25,7 @@ namespace OpenSkinDesigner.Structures
 		public float pFontSize;
 
 		public sColor pBackgroundColor;
+        public String pBackgroundColorRaw;
 		public sColor pForegroundColor;
 
 		public cProperty.eVAlign pValign = cProperty.eVAlign.Center;
@@ -172,14 +173,35 @@ namespace OpenSkinDesigner.Structures
 		[TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
 		 CategoryAttribute(entryName)]
 		public String BackgroundColor
-		{
-			get { return pBackgroundColor.pName; }
-			set
-			{
-				if (value != null)
-					pBackgroundColor = (sColor)cDataBase.pColors.get(value);
-				else
-					pBackgroundColor = null;
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(pBackgroundColorRaw)) return pBackgroundColorRaw;
+                return pBackgroundColor != null ? pBackgroundColor.pName : "(none)";
+            }
+            set
+            {
+                pBackgroundColorRaw = value;
+
+                if (sGradient.isGradient(value))
+                {
+                    pBackgroundGradient = sGradient.parse(value);
+                    pBackgroundColor = null;
+                    if (myNode.Attributes["backgroundColor"] != null)
+                        myNode.Attributes["backgroundColor"].Value = value;
+                    else
+                    {
+                        myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute("backgroundColor"));
+                        myNode.Attributes["backgroundColor"].Value = value;
+                    }
+                    return;
+                }
+
+                if (value != null)
+                    pBackgroundColor = (sColor)cDataBase.pColors.get(value);
+                else
+                    pBackgroundColor = null;
+                pBackgroundColorRaw = null;
 
 				if (pBackgroundColor != null && pBackgroundColor != (sColor)pWindowStyle.pColors["LabelBackground"])
 				{
@@ -315,20 +337,30 @@ namespace OpenSkinDesigner.Structures
             // ________________________________________________________________________________________________________________
 
 
+            // cornerRadius is parsed in the base sAttribute class.
+            // Keep the raw value (for example "30;topLeft,topRight") so the preview can
+            // draw only the requested corners instead of rounding all four corners.
             if (myNode.Attributes["cornerRadius"] != null)
             {
-                string value = myNode.Attributes["cornerRadius"].Value;
-
-                Logger.LogMessage("%%%%%%%%%%%%%%% cAttributeLabel.cs - cornerRadius ist: " + value);
-
-                float.TryParse(value, out pCornerRadius);
+                Logger.LogMessage("%%%%%%%%%%%%%%% cAttributeLabel.cs - cornerRadius ist: " + myNode.Attributes["cornerRadius"].Value);
             }
 
             // ------------------------ background -----------------------------------------------------------------------------------
 
 
             if (myNode.Attributes["backgroundColor"] != null)
-				pBackgroundColor = (sColor)cDataBase.pColors.get(myNode.Attributes["backgroundColor"].Value);
+            {
+                String value = myNode.Attributes["backgroundColor"].Value;
+                if (sGradient.isGradient(value))
+                {
+                    pBackgroundColorRaw = value;
+                    pBackgroundGradient = sGradient.parse(value);
+                    // Keep a normal color for preview/fallback paths that still expect pBackgroundColor.
+                    pBackgroundColor = (sColor)cDataBase.pColors.get(value.Split(',')[0].Trim());
+                }
+                else
+                    pBackgroundColor = (sColor)cDataBase.pColors.get(value);
+            }
 			else if ((sColor)pWindowStyle.pColors["LabelBackground"] != null)
 				pBackgroundColor = (sColor)pWindowStyle.pColors["LabelBackground"];
 			else

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -381,18 +381,19 @@ namespace OpenSkinDesigner.Structures
 
 
         [CategoryAttribute(entryName)]
-        public float CornerRadius
+        public String CornerRadius
         {
-            get { return pCornerRadius; }
-            set {
-                pCornerRadius = value;
-
+            get { return pCornerRadiusRaw; }
+            set
+            {
+                pCornerRadiusRaw = NormalizeCornerRadius(value);
+                pCornerRadius = GetCornerRadiusNumber(pCornerRadiusRaw);
                 if (myNode.Attributes["cornerRadius"] != null)
-                    myNode.Attributes["cornerRadius"].Value = pCornerRadius.ToString();
+                    myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
                 else
                 {
                     myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute("cornerRadius"));
-                    myNode.Attributes["cornerRadius"].Value = pCornerRadius.ToString();
+                    myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
                 }
             }
         }
@@ -511,6 +512,24 @@ namespace OpenSkinDesigner.Structures
 
         public XmlNode myNode;
         internal float pCornerRadius;
+        internal String pCornerRadiusRaw = "0";
+
+        private static String NormalizeCornerRadius(String value)
+        {
+            return String.IsNullOrWhiteSpace(value) ? "0" : value.Trim();
+        }
+
+        private static float GetCornerRadiusNumber(String value)
+        {
+            if (String.IsNullOrWhiteSpace(value)) return 0;
+            String radius = value.Split(';')[0].Trim();
+            float result;
+            if (float.TryParse(radius, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                return result;
+            if (float.TryParse(radius, out result))
+                return result;
+            return 0;
+        }
 
         public int getValue(String NameOfVariable, bool First)
         {
@@ -682,9 +701,15 @@ namespace OpenSkinDesigner.Structures
                 pZPosition = 0;
 
             if (node.Attributes["cornerRadius"] != null)
-                pCornerRadius = Convert.ToInt32(node.Attributes["cornerRadius"].Value.Trim());
+            {
+                pCornerRadiusRaw = NormalizeCornerRadius(node.Attributes["cornerRadius"].Value);
+                pCornerRadius = GetCornerRadiusNumber(pCornerRadiusRaw);
+            }
             else
+            {
+                pCornerRadiusRaw = "0";
                 pCornerRadius = 0;
+            }
 
             if (node.Attributes["transparent"] != null)
                 pTransparent = Convert.ToUInt32(node.Attributes["transparent"].Value.Trim()) != 0;
