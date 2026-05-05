@@ -22,14 +22,24 @@ namespace OpenSkinDesigner.Frames
             this.labelCompanyName.Text = AssemblyCompany;
             this.textBoxDescription.Text = AssemblyDescription + Environment.NewLine +
                 Environment.NewLine + "Changelog:" + Environment.NewLine + Environment.NewLine +
-                "v4.2.0.0 MOD by odem2014" + Environment.NewLine +
-                "- Added support for eLabel backgroundColor gradients using start,end,direction syntax" + Environment.NewLine +
-                "- Fixed saving of backgroundColor=\"#00101010,#00303030,vertical\"" + Environment.NewLine +
-                "- Fixed saving of backgroundColor=\"red,green,vertical\"" + Environment.NewLine +
-                "- Fixed saving of backgroundColor=\"#00ff0000,#0000ff00,vertical\"" + Environment.NewLine +
-                "- Added support for cornerRadius edge masks like 30;topLeft,topRight" + Environment.NewLine +
-                "- Fixed preview rendering so cornerRadius masks only round the selected corners" + Environment.NewLine +
-                "- Preserved extended cornerRadius values when loading and saving skin XML" + Environment.NewLine + Environment.NewLine +
+                "v4.2.1.0 MOD by odem2014" + Environment.NewLine +
+                "- Updated app title/product name to OpenSkin Designer MOD by odem2014" + Environment.NewLine +
+                "- Updated assembly and file version to v4.2.1.0" + Environment.NewLine +
+                "- Added eLabel and label-widget backgroundColor gradient support" + Environment.NewLine +
+                "- Added gradient start/middle/end/direction controls in the property panel" + Environment.NewLine +
+                "- Added cornerRadius size and corner-direction controls in the property panel" + Environment.NewLine +
+                "- Fixed saving of #ARGB gradient backgroundColor values" + Environment.NewLine +
+                "- Fixed cornerRadius masks like 30;topLeft,topRight" + Environment.NewLine +
+                "- Fixed preview rendering for partial rounded corners" + Environment.NewLine +
+                "- Added progress background/foreground color controls" + Environment.NewLine +
+                "- Added progress foreground gradient controls" + Environment.NewLine +
+                "- Added listbox item/selected-item gradient and corner-radius controls" + Environment.NewLine +
+                "- Improved listbox vertical/grid preview, item spacing, selection zoom, and selection index" + Environment.NewLine +
+                "- Added scrollbar preview controls for radius, width, offset, colors, and border" + Environment.NewLine +
+                "- Fixed null-gradient crashes in listbox preview" + Environment.NewLine +
+                "- Fixed EventTime converter preview crash when preview data is missing" + Environment.NewLine +
+                "- Added Arabic language file support" + Environment.NewLine +
+                "- Updated Release build output to include runtime folders" + Environment.NewLine + Environment.NewLine +
                 "v3.1.0.0 by Jason Hood" + Environment.NewLine +
                 "- Add the GPLv3 license file" + Environment.NewLine +
                 "- Replace 'Suchen' with 'Search'" + Environment.NewLine +

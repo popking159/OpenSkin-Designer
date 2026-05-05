@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -739,7 +739,10 @@ namespace OpenSkinDesigner.Frames
                 GridItem gI1 = propertyGrid1.SelectedGridItem;
                 cmd.Helper = (s as PropertyGrid).SelectedObject;
 
-                String label = e.ChangedItem.Label;
+                // Use the real property name, not the display label.
+                // New editor fields use [DisplayName(...)] such as "Gradient Start Color";
+                // looking up by Label fails and prevents the immediate refresh/editor update.
+                String label = e.ChangedItem.PropertyDescriptor != null ? e.ChangedItem.PropertyDescriptor.Name : e.ChangedItem.Label;
                 PropertyInfo pi = ((s as PropertyGrid).SelectedObject as sAttribute).GetType().GetProperty(label);
                 Object oldValue = e.OldValue;
                 //This is maybe not the correct place for this                
@@ -747,8 +750,8 @@ namespace OpenSkinDesigner.Frames
                 //
                 if (pi == null)
                 {
-                    //FIXME: This is just a workaround
-                    label = e.ChangedItem.Parent.Label;
+                    //FIXME: This is just a workaround for expandable properties like Position/Size.
+                    label = e.ChangedItem.Parent != null && e.ChangedItem.Parent.PropertyDescriptor != null ? e.ChangedItem.Parent.PropertyDescriptor.Name : e.ChangedItem.Parent.Label;
                     pi = ((s as PropertyGrid).SelectedObject as sAttribute).GetType().GetProperty(label);
                     Object gi = e.ChangedItem.Parent.Value;
                     if (gi != null)
