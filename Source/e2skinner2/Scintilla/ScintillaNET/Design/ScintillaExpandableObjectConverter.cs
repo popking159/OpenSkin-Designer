@@ -87,9 +87,8 @@ namespace ScintillaNET.Design
 
                 return context.PropertyDescriptor.PropertyType.Name + " { " + sb + " } ";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Debug.WriteLine(ex);
                 throw;
             }
         }
