@@ -1,4 +1,4 @@
-#region Using Directives
+﻿#region Using Directives
 
 using System;
 using System.Drawing;
@@ -140,7 +140,6 @@ namespace ScintillaNET
         }
 
 
-        [Obsolete("Use ScnModified method instead.")]
         private void FireModified(NativeScintillaEventArgs ea)
         {
             //	First we fire the INativeScintilla Modified event.

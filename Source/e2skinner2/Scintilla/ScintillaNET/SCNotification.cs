@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace ScintillaNET
 {
-    [Obsolete("This type will not be public in future versions.")]
     [StructLayout(LayoutKind.Sequential)]
     public struct SCNotification
     {

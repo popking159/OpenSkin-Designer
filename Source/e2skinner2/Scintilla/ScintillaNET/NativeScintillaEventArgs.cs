@@ -18,7 +18,6 @@ namespace ScintillaNET
     ///     and SCNotification is the SCNotification Struct pointed to by 
     ///     Msg's lParam. 
     /// </remarks>
-    [Obsolete("This type will not be public in future versions.")]
     public class NativeScintillaEventArgs : EventArgs
     {
         #region Fields

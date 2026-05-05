@@ -16,7 +16,6 @@ namespace ScintillaNET
         private string[] _keywords = new string[] { "", "", "", "", "", "", "", "", "" };
         private Dictionary<string, Lexer> _lexerAliasMap;
         private Dictionary<string, string[]> _lexerKeywordListMap;
-        private Dictionary<string, Dictionary<string, int>> _lexerStyleMap;
 
         #endregion Fields
 

@@ -11,7 +11,6 @@ namespace ScintillaNET
     /// <summary>
     ///     This matches the Win32 NMHDR structure
     /// </summary>
-    [Obsolete("This type will not be public in future versions.")]
     [StructLayout(LayoutKind.Sequential)]
     public struct NotifyHeader
     {
