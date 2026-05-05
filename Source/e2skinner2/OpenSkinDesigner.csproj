@@ -492,4 +492,17 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="CopyRuntimeFoldersAfterBuild" AfterTargets="Build">
+    <ItemGroup>
+      <SkinFiles Include="skins\**\*.*" />
+      <ElementFiles Include="elements\**\*.*" />
+      <LanguageFiles Include="languages\**\*.*" />
+      <FontFiles Include="fonts\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SkinFiles)" DestinationFiles="@(SkinFiles->'$(TargetDir)skins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ElementFiles)" DestinationFiles="@(ElementFiles->'$(TargetDir)elements\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LanguageFiles)" DestinationFiles="@(LanguageFiles->'$(TargetDir)languages\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(FontFiles)" DestinationFiles="@(FontFiles->'$(TargetDir)fonts\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
