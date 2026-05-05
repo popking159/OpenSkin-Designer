@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,7 +8,7 @@ using System.Resources;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
 [assembly: AssemblyTitle("OpenSkin Designer MOD by odem2014")]
-[assembly: AssemblyDescription("Open skin designer for enigma2 based devices. Special thanks to schischu65 for e2skinner!")]
+[assembly: AssemblyDescription("OpenSkin Designer MOD by odem2014 for Enigma2 based devices.")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("Sinthex IT-Solutions")]
 [assembly: AssemblyProduct("OpenSkin Designer MOD by odem2014")]
@@ -30,7 +30,7 @@ using System.Resources;
 //
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
-// [assembly: AssemblyVersion("4.2.0.0")]
-[assembly: AssemblyVersion("4.2.0.1")]
-[assembly: AssemblyFileVersion("4.2.0.1")]
+// [assembly: AssemblyVersion("4.2.1.0")]
+[assembly: AssemblyVersion("4.2.1.0")]
+[assembly: AssemblyFileVersion("4.2.1.0")]
 [assembly: NeutralResourcesLanguageAttribute ("en")]
