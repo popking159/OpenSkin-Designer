@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -16,6 +16,10 @@ namespace OpenSkinDesigner.Structures
         protected sColor pColor;
         protected sGradient pGradient;
         private float pCornerRadius;
+        private bool pCornerTopLeft = true;
+        private bool pCornerTopRight = true;
+        private bool pCornerBottomRight = true;
+        private bool pCornerBottomLeft = true;
 
         public sGraphicRectangel(sAttribute attr, bool filled, float linewidth, sColor color)
             : base(attr)
@@ -79,10 +83,78 @@ namespace OpenSkinDesigner.Structures
         // ##################################
         public sGraphicRectangel withCornerRadius(float cornerRadius)
         {
-            
             pCornerRadius = cornerRadius * 2;
+            SetCornerMask("all");
             Logger.LogMessage("============= sGraphicRectangels - cornerRadius uebergeben ist doppelt so groß: () " + cornerRadius);
             return this;
+        }
+
+        public sGraphicRectangel withCornerRadius(String cornerRadiusRaw)
+        {
+            float radius = 0;
+            String mask = "all";
+            if (!String.IsNullOrEmpty(cornerRadiusRaw))
+            {
+                String[] parts = cornerRadiusRaw.Split(new char[] { ';' }, 2);
+                float.TryParse(parts[0].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out radius);
+                if (parts.Length > 1)
+                    mask = parts[1].Trim();
+            }
+            pCornerRadius = radius * 2;
+            SetCornerMask(mask);
+            Logger.LogMessage("============= sGraphicRectangels - cornerRadius raw: " + cornerRadiusRaw);
+            return this;
+        }
+
+        private void SetCornerMask(String mask)
+        {
+            pCornerTopLeft = true;
+            pCornerTopRight = true;
+            pCornerBottomRight = true;
+            pCornerBottomLeft = true;
+
+            if (String.IsNullOrEmpty(mask) || mask == "all")
+                return;
+
+            pCornerTopLeft = false;
+            pCornerTopRight = false;
+            pCornerBottomRight = false;
+            pCornerBottomLeft = false;
+
+            String[] parts = mask.Split(new char[] { ',' });
+            foreach (String raw in parts)
+            {
+                String part = raw.Trim();
+                if (part == "top") { pCornerTopLeft = true; pCornerTopRight = true; }
+                else if (part == "bottom") { pCornerBottomLeft = true; pCornerBottomRight = true; }
+                else if (part == "left") { pCornerTopLeft = true; pCornerBottomLeft = true; }
+                else if (part == "right") { pCornerTopRight = true; pCornerBottomRight = true; }
+                else if (part == "topLeft") pCornerTopLeft = true;
+                else if (part == "topRight") pCornerTopRight = true;
+                else if (part == "bottomRight") pCornerBottomRight = true;
+                else if (part == "bottomLeft") pCornerBottomLeft = true;
+            }
+        }
+
+        private GraphicsPath CreateRoundedPath(float x, float y, float width, float height)
+        {
+            GraphicsPath path = new GraphicsPath();
+            float d = pCornerRadius;
+            if (d <= 0 || width <= 0 || height <= 0)
+            {
+                path.AddRectangle(new RectangleF(x, y, width, height));
+                return path;
+            }
+
+            if (d > width) d = width;
+            if (d > height) d = height;
+
+            if (pCornerTopLeft) path.AddArc(x, y, d, d, 180, 90); else path.AddLine(x, y, x, y);
+            if (pCornerTopRight) path.AddArc(x + width - d, y, d, d, 270, 90); else path.AddLine(x + width, y, x + width, y);
+            if (pCornerBottomRight) path.AddArc(x + width - d, y + height - d, d, d, 0, 90); else path.AddLine(x + width, y + height, x + width, y + height);
+            if (pCornerBottomLeft) path.AddArc(x, y + height - d, d, d, 90, 90); else path.AddLine(x, y + height, x, y + height);
+            path.CloseFigure();
+            return path;
         }
 
         public override void paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -127,22 +199,12 @@ namespace OpenSkinDesigner.Structures
                 };
                 
                 // GraphicsPath für das Rechteck mit abgerundeten Ecken erstellen
-                GraphicsPath path = new GraphicsPath();
-                if (pCornerRadius > 0)
+                using (GraphicsPath path = CreateRoundedPath(x, y, width, height))
                 {
-                    Logger.LogMessage("============= cGraphicRectangel.cs - BackgroundGradient malen mit Radius ");
-                    path.AddArc(x, y, pCornerRadius, pCornerRadius, 180, 90);
-                    path.AddArc(x + width - pCornerRadius, y, pCornerRadius, pCornerRadius, 270, 90);
-                    path.AddArc(x + width - pCornerRadius, y + height - pCornerRadius, pCornerRadius, pCornerRadius, 0, 90);
-                    path.AddArc(x, y + height - pCornerRadius, pCornerRadius, pCornerRadius, 90, 90);
-                    path.CloseFigure(); // Pfad schließen
+                    // Pfad mit dem Farbverlauf füllen
+                    g.FillPath(brush, path);
                 }
-                else
-                {
-                    path.AddRectangle(new Rectangle(pX, pY, pWidth, pHeight));
-                }
-                // Pfad mit dem Farbverlauf füllen
-                g.FillPath(brush, path);
+                brush.Dispose();
 
             }
             // #########################################################################################################
@@ -165,54 +227,27 @@ namespace OpenSkinDesigner.Structures
                 Logger.LogMessage("pHeight : " + pHeight);
     
 
-                GraphicsPath path = new GraphicsPath();
-
-                // #############################################
-                using (Pen pen = new Pen(penColor, pLineWidth))
-               
-
-
-                // ##############################################
-                // Pfad für ein Rechteck mit abgerundeten Ecken erstellen
-                if (pCornerRadius > 0)
+                using (GraphicsPath path = CreateRoundedPath(pX, pY, pWidth, pHeight))
                 {
-                    path.AddArc(pX, pY, pCornerRadius, pCornerRadius, 180, 90);
-                    path.AddArc(pX + pWidth - pCornerRadius, pY, pCornerRadius, pCornerRadius, 270, 90);
-                    path.AddArc(pX + pWidth - pCornerRadius, pY + pHeight - pCornerRadius, pCornerRadius, pCornerRadius, 0, 90);
-                    path.AddArc(pX, pY + pHeight - pCornerRadius, pCornerRadius, pCornerRadius, 90, 90);
-                    path.CloseFigure(); // Pfad schließen
-                }
-                else
-                {
-                    path.AddRectangle(new Rectangle(pX, pY, pWidth, pHeight));
-                }
+                    if (pFilled)
+                    {
+                        Logger.LogMessage("============= cGraphicRectangel.cs - BackgroundColor malen Filled ");
+                        using (SolidBrush brush = new SolidBrush(penColor))
+                        {
+                            g.FillPath(brush, path);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogMessage("============= cGraphicRectangel.cs - BackgroundColor malen DrawPath");
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-                if (pFilled)
-                {
-                    Logger.LogMessage("============= cGraphicRectangel.cs - BackgroundColor malen Filled ");
-                    g.FillPath(new SolidBrush(penColor), path);
-                }
-                else
-                {
-                    Logger.LogMessage("============= cGraphicRectangel.cs - BackgroundColor malen DrawPath");
-                    // g.DrawPath(new Pen(penColor, pLineWidth), path);
-                    
-                   
-
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    // Linien zwischen den Bögen zeichnen
-
-
-
-                    // Pen erstellen und LineJoin auf Round setzen
-                    Pen pen = new Pen(penColor, pLineWidth);
-                    pen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
-
-                    // Pfad zeichnen
-                    g.DrawPath(pen, path);
-
-
+                        using (Pen outlinePen = new Pen(penColor, pLineWidth))
+                        {
+                            outlinePen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                            g.DrawPath(outlinePen, path);
+                        }
+                    }
                 }
             }
         }

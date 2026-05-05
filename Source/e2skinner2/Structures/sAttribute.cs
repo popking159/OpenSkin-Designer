@@ -386,15 +386,31 @@ namespace OpenSkinDesigner.Structures
             get { return pCornerRadiusRaw; }
             set
             {
-                pCornerRadiusRaw = NormalizeCornerRadius(value);
-                pCornerRadius = GetCornerRadiusNumber(pCornerRadiusRaw);
-                if (myNode.Attributes["cornerRadius"] != null)
-                    myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
-                else
-                {
-                    myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute("cornerRadius"));
-                    myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
-                }
+                SetCornerRadiusRaw(value);
+            }
+        }
+
+        [CategoryAttribute(entryName),
+        DisplayName("CornerRadius Size")]
+        public float CornerRadiusSize
+        {
+            get { return pCornerRadius; }
+            set
+            {
+                String corners = GetCornerRadiusCorners(pCornerRadiusRaw);
+                SetCornerRadiusRaw(BuildCornerRadius(value, corners));
+            }
+        }
+
+        [TypeConverter(typeof(cProperty.CornerRadiusCornersConverter)),
+        CategoryAttribute(entryName),
+        DisplayName("CornerRadius Corners")]
+        public String CornerRadiusCorners
+        {
+            get { return GetCornerRadiusCorners(pCornerRadiusRaw); }
+            set
+            {
+                SetCornerRadiusRaw(BuildCornerRadius(pCornerRadius, value));
             }
         }
 
@@ -529,6 +545,35 @@ namespace OpenSkinDesigner.Structures
             if (float.TryParse(radius, out result))
                 return result;
             return 0;
+        }
+
+        private static String GetCornerRadiusCorners(String value)
+        {
+            if (String.IsNullOrWhiteSpace(value)) return "all";
+            String[] parts = value.Split(new char[] { ';' }, 2);
+            if (parts.Length < 2 || String.IsNullOrWhiteSpace(parts[1])) return "all";
+            return parts[1].Trim();
+        }
+
+        private static String BuildCornerRadius(float radius, String corners)
+        {
+            String radiusText = radius.ToString(CultureInfo.InvariantCulture);
+            if (String.IsNullOrWhiteSpace(corners) || corners == "all" || corners == "none")
+                return radiusText;
+            return radiusText + ";" + corners.Trim();
+        }
+
+        private void SetCornerRadiusRaw(String value)
+        {
+            pCornerRadiusRaw = NormalizeCornerRadius(value);
+            pCornerRadius = GetCornerRadiusNumber(pCornerRadiusRaw);
+            if (myNode.Attributes["cornerRadius"] != null)
+                myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
+            else
+            {
+                myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute("cornerRadius"));
+                myNode.Attributes["cornerRadius"].Value = pCornerRadiusRaw;
+            }
         }
 
         public int getValue(String NameOfVariable, bool First)

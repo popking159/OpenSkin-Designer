@@ -220,6 +220,46 @@ namespace OpenSkinDesigner.Structures
 		}
 
 
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("Label Gradient"),
+         DisplayName("Gradient Start Color")]
+        public String BackgroundGradientStartColor
+        {
+            get { return GetBackgroundGradientPart(0); }
+            set { SetBackgroundGradientPart(0, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("Label Gradient"),
+         DisplayName("Gradient Middle Color")]
+        public String BackgroundGradientMiddleColor
+        {
+            get { return GetBackgroundGradientPart(1); }
+            set { SetBackgroundGradientPart(1, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("Label Gradient"),
+         DisplayName("Gradient End Color")]
+        public String BackgroundGradientEndColor
+        {
+            get { return GetBackgroundGradientPart(2); }
+            set { SetBackgroundGradientPart(2, value); }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("Label Gradient"),
+         DisplayName("Gradient Direction")]
+        public String BackgroundGradientDirection
+        {
+            get { return GetBackgroundGradientDirection(); }
+            set { SetBackgroundGradientDirection(value); }
+        }
+
+
 		[TypeConverter(typeof(cProperty.VAlignConverter)),
 		 CategoryAttribute(entryName)]
 		public String Valign
@@ -296,6 +336,64 @@ namespace OpenSkinDesigner.Structures
 						myNode.Attributes.RemoveNamedItem("noWrap");
 			}
 		}
+
+
+        private String[] GetBackgroundGradientParts()
+        {
+            String raw = !String.IsNullOrEmpty(pBackgroundColorRaw) ? pBackgroundColorRaw : BackgroundColor;
+            if (!sGradient.isGradient(raw))
+            {
+                String baseColor = pBackgroundColor != null ? pBackgroundColor.pName : "transparent";
+                return new String[] { baseColor, baseColor, baseColor, "vertical" };
+            }
+
+            String[] parts = raw.Split(new char[] { ',' });
+            for (int i = 0; i < parts.Length; i++) parts[i] = parts[i].Trim();
+
+            if (parts.Length == 3)
+                return new String[] { parts[0], parts[1], parts[1], parts[2] };
+
+            return new String[] { parts[0], parts[1], parts[2], parts[3] };
+        }
+
+        private String GetBackgroundGradientPart(int index)
+        {
+            return GetBackgroundGradientParts()[index];
+        }
+
+        private String GetBackgroundGradientDirection()
+        {
+            return GetBackgroundGradientParts()[3];
+        }
+
+        private void SetBackgroundGradientPart(int index, String value)
+        {
+            String[] parts = GetBackgroundGradientParts();
+            if (String.IsNullOrEmpty(value) || value == "(none)") value = "transparent";
+            parts[index] = value;
+            ApplyBackgroundGradientParts(parts);
+        }
+
+        private void SetBackgroundGradientDirection(String value)
+        {
+            String[] parts = GetBackgroundGradientParts();
+            if (String.IsNullOrEmpty(value)) value = "vertical";
+            parts[3] = value.Trim().ToLowerInvariant();
+            ApplyBackgroundGradientParts(parts);
+        }
+
+        private void ApplyBackgroundGradientParts(String[] parts)
+        {
+            // Save as 3-part syntax when middle and end are equal: start,end,direction.
+            // Save as 4-part syntax when a real middle color is selected: start,mid,end,direction.
+            String raw;
+            if (parts[1] == parts[2])
+                raw = parts[0] + "," + parts[2] + "," + parts[3];
+            else
+                raw = parts[0] + "," + parts[1] + "," + parts[2] + "," + parts[3];
+
+            BackgroundColor = raw;
+        }
 
 		/// <summary>
 		/// ///////////////////////////////////////////////////////////////////

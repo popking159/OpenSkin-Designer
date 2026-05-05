@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -74,6 +74,20 @@ namespace OpenSkinDesigner.Structures
 
         // #########################################
         public sGradient pItemGradientSelected;
+        public String pItemGradientSelectedRaw;
+        public sGradient pItemGradient;
+        public String pItemGradientRaw;
+        public int pItemCornerRadius;
+        public int pItemCornerRadiusSelected;
+        public int pSelection;
+        public bool pEnableWrapAround;
+        public String pListOrientation = "vertical";
+        public int pItemWidth = 0;
+        public int pItemSpacingX = 0;
+        public int pItemSpacingY = 0;
+        public int pSelectionZoom = 0;
+        public sColor pMoveBackgroundColor;
+        public sColor pMoveFontColor;
         //public float pCornerRadius;
 
         public int pscrollbarWidth;
@@ -160,6 +174,427 @@ namespace OpenSkinDesigner.Structures
             }
         }
 
+
+
+
+        [CategoryAttribute(entryName)]
+        public Int32 ScrollbarRadius
+        {
+            get { return pscrollbarRadius; }
+            set
+            {
+                pscrollbarRadius = value < 0 ? 0 : value;
+                if (myNode.Attributes["scrollbarRadius"] != null)
+                    myNode.Attributes["scrollbarRadius"].Value = pscrollbarRadius.ToString();
+                else
+                {
+                    myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute("scrollbarRadius"));
+                    myNode.Attributes["scrollbarRadius"].Value = pscrollbarRadius.ToString();
+                }
+            }
+        }
+
+
+        private void SetAttributeValue(String name, String value)
+        {
+            if (String.IsNullOrEmpty(value) || value == "(none)")
+            {
+                if (myNode.Attributes[name] != null)
+                    myNode.Attributes.RemoveNamedItem(name);
+                return;
+            }
+
+            if (myNode.Attributes[name] != null)
+                myNode.Attributes[name].Value = value;
+            else
+            {
+                myNode.Attributes.Append(myNode.OwnerDocument.CreateAttribute(name));
+                myNode.Attributes[name].Value = value;
+            }
+        }
+
+        private static String ColorName(sColor color)
+        {
+            return color != null ? color.pName : "(none)";
+        }
+
+        private String[] GetItemGradientParts()
+        {
+            String raw = pItemGradientSelectedRaw;
+            if (String.IsNullOrEmpty(raw) && myNode.Attributes["itemGradientSelected"] != null)
+                raw = myNode.Attributes["itemGradientSelected"].Value;
+
+            String[] parts = new String[] { "(none)", "(none)", "(none)", "vertical" };
+            if (String.IsNullOrEmpty(raw))
+                return parts;
+
+            String[] split = raw.Split(',');
+            if (split.Length >= 3)
+            {
+                parts[0] = split[0].Trim();
+                if (split.Length == 3)
+                {
+                    parts[1] = split[1].Trim();
+                    parts[2] = split[1].Trim();
+                    parts[3] = split[2].Trim().ToLower() == "horizontal" ? "horizontal" : "vertical";
+                }
+                else
+                {
+                    parts[1] = split[1].Trim();
+                    parts[2] = split[2].Trim();
+                    parts[3] = split[3].Trim().ToLower() == "horizontal" ? "horizontal" : "vertical";
+                }
+            }
+            return parts;
+        }
+
+        private void UpdateItemGradientPart(int index, String value)
+        {
+            String[] parts = GetItemGradientParts();
+            parts[index] = String.IsNullOrEmpty(value) ? "(none)" : value.Trim();
+            ItemGradientSelected = parts[0] + "," + parts[1] + "," + parts[2] + "," + parts[3];
+        }
+
+
+        private String[] GetNormalItemGradientParts()
+        {
+            String raw = pItemGradientRaw;
+            if (String.IsNullOrEmpty(raw) || raw == "(none)")
+                raw = "mcolor6,mcolor5,mcolor6,vertical";
+            String[] parts = raw.Split(new char[] { ',' });
+            if (parts.Length == 3)
+                return new String[] { parts[0].Trim(), parts[1].Trim(), parts[1].Trim(), parts[2].Trim().ToLower() };
+            if (parts.Length >= 4)
+                return new String[] { parts[0].Trim(), parts[1].Trim(), parts[2].Trim(), parts[3].Trim().ToLower() };
+            return new String[] { "mcolor6", "mcolor5", "mcolor6", "vertical" };
+        }
+
+        private void UpdateNormalItemGradientPart(int index, String value)
+        {
+            String[] parts = GetNormalItemGradientParts();
+            parts[index] = String.IsNullOrEmpty(value) ? "(none)" : value.Trim();
+            ItemGradient = parts[0] + "," + parts[1] + "," + parts[2] + "," + parts[3];
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Listbox Background Color")]
+        public String BackgroundColor
+        {
+            get { return ColorName(pListboxBackgroundColor); }
+            set
+            {
+                pListboxBackgroundColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("backgroundColor", value);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Listbox Foreground Color")]
+        public String ForegroundColor
+        {
+            get { return ColorName(pListboxForegroundColor); }
+            set
+            {
+                pListboxForegroundColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("foregroundColor", value);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Listbox Selected Background Color")]
+        public String BackgroundColorSelected
+        {
+            get { return ColorName(pListboxSelectedBackgroundColor); }
+            set
+            {
+                pListboxSelectedBackgroundColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("backgroundColorSelected", value);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Listbox Selected Foreground Color")]
+        public String ForegroundColorSelected
+        {
+            get { return ColorName(pListboxSelectedForegroundColor); }
+            set
+            {
+                pListboxSelectedForegroundColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("foregroundColorSelected", value);
+            }
+        }
+
+        [TypeConverter(typeof(BooleanConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Enable Wrap Around")]
+        public bool EnableWrapAround
+        {
+            get { return pEnableWrapAround; }
+            set
+            {
+                pEnableWrapAround = value;
+                SetAttributeValue("enableWrapAround", value ? "1" : "0");
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Selection")]
+        public Int32 Selection
+        {
+            get { return pSelection; }
+            set
+            {
+                pSelection = value < 0 ? 0 : value;
+                SetAttributeValue("selection", pSelection.ToString());
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Item Selected Corner Radius")]
+        public Int32 ItemCornerRadiusSelected
+        {
+            get { return pItemCornerRadiusSelected; }
+            set
+            {
+                pItemCornerRadiusSelected = value < 0 ? 0 : value;
+                SetAttributeValue("itemCornerRadiusSelected", pItemCornerRadiusSelected.ToString());
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorOrGradientConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Item Selected Gradient")]
+        public String ItemGradientSelected
+        {
+            get { return String.IsNullOrEmpty(pItemGradientSelectedRaw) ? "(none)" : pItemGradientSelectedRaw; }
+            set
+            {
+                if (String.IsNullOrEmpty(value) || value == "(none)")
+                {
+                    pItemGradientSelectedRaw = null;
+                    pItemGradientSelected = null;
+                    SetAttributeValue("itemGradientSelected", null);
+                    return;
+                }
+                pItemGradientSelectedRaw = value.Trim();
+                pItemGradientSelected = sGradient.parse(pItemGradientSelectedRaw);
+                SetAttributeValue("itemGradientSelected", pItemGradientSelectedRaw);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Start Color")]
+        public String ItemGradientSelectedStartColor
+        {
+            get { return GetItemGradientParts()[0]; }
+            set { UpdateItemGradientPart(0, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Middle Color")]
+        public String ItemGradientSelectedMiddleColor
+        {
+            get { return GetItemGradientParts()[1]; }
+            set { UpdateItemGradientPart(1, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected End Color")]
+        public String ItemGradientSelectedEndColor
+        {
+            get { return GetItemGradientParts()[2]; }
+            set { UpdateItemGradientPart(2, value); }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Direction")]
+        public String ItemGradientSelectedDirection
+        {
+            get { return GetItemGradientParts()[3]; }
+            set { UpdateItemGradientPart(3, value); }
+        }
+
+
+        [TypeConverter(typeof(cProperty.ListOrientationConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("List Orientation")]
+        public String ListOrientation
+        {
+            get { return String.IsNullOrEmpty(pListOrientation) ? "vertical" : pListOrientation; }
+            set
+            {
+                pListOrientation = (value != null && value.ToLower() == "grid") ? "grid" : "vertical";
+                SetAttributeValue("listOrientation", pListOrientation);
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Item Width")]
+        public Int32 ItemWidth
+        {
+            get { return pItemWidth; }
+            set
+            {
+                pItemWidth = value < 0 ? 0 : value;
+                if (pItemWidth > 0)
+                    SetAttributeValue("itemWidth", pItemWidth.ToString());
+                else
+                    SetAttributeValue("itemWidth", null);
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Item Spacing X")]
+        public Int32 ItemSpacingX
+        {
+            get { return pItemSpacingX; }
+            set
+            {
+                pItemSpacingX = value < 0 ? 0 : value;
+                SetAttributeValue("itemSpacing", pItemSpacingX.ToString() + "," + pItemSpacingY.ToString());
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Item Spacing Y")]
+        public Int32 ItemSpacingY
+        {
+            get { return pItemSpacingY; }
+            set
+            {
+                pItemSpacingY = value < 0 ? 0 : value;
+                SetAttributeValue("itemSpacing", pItemSpacingX.ToString() + "," + pItemSpacingY.ToString());
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Selection Zoom")]
+        public Int32 SelectionZoom
+        {
+            get { return pSelectionZoom; }
+            set
+            {
+                pSelectionZoom = value < 0 ? 0 : value;
+                SetAttributeValue("selectionZoom", pSelectionZoom > 0 ? pSelectionZoom.ToString() : null);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Move Background Color")]
+        public String MoveBackgroundColor
+        {
+            get { return ColorName(pMoveBackgroundColor); }
+            set
+            {
+                pMoveBackgroundColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("moveBackgroundColor", value);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Move Font Color")]
+        public String MoveFontColor
+        {
+            get { return ColorName(pMoveFontColor); }
+            set
+            {
+                pMoveFontColor = value != null && value != "(none)" ? (sColor)cDataBase.pColors.get(value) : null;
+                SetAttributeValue("moveFontColor", value);
+            }
+        }
+
+        [CategoryAttribute(entryName),
+         DisplayName("Item Corner Radius")]
+        public Int32 ItemCornerRadius
+        {
+            get { return pItemCornerRadius; }
+            set
+            {
+                pItemCornerRadius = value < 0 ? 0 : value;
+                SetAttributeValue("itemCornerRadius", pItemCornerRadius > 0 ? pItemCornerRadius.ToString() : null);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorOrGradientConverter)),
+         CategoryAttribute(entryName),
+         DisplayName("Item Gradient")]
+        public String ItemGradient
+        {
+            get { return String.IsNullOrEmpty(pItemGradientRaw) ? "(none)" : pItemGradientRaw; }
+            set
+            {
+                if (String.IsNullOrEmpty(value) || value == "(none)")
+                {
+                    pItemGradientRaw = null;
+                    pItemGradient = null;
+                    SetAttributeValue("itemGradient", null);
+                    return;
+                }
+                pItemGradientRaw = value.Trim();
+                pItemGradient = sGradient.parse(pItemGradientRaw);
+                SetAttributeValue("itemGradient", pItemGradientRaw);
+            }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Start Color")]
+        public String ItemGradientStartColor
+        {
+            get { return GetNormalItemGradientParts()[0]; }
+            set { UpdateNormalItemGradientPart(0, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Middle Color")]
+        public String ItemGradientMiddleColor
+        {
+            get { return GetNormalItemGradientParts()[1]; }
+            set { UpdateNormalItemGradientPart(1, value); }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item End Color")]
+        public String ItemGradientEndColor
+        {
+            get { return GetNormalItemGradientParts()[2]; }
+            set { UpdateNormalItemGradientPart(2, value); }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Direction")]
+        public String ItemGradientDirection
+        {
+            get { return GetNormalItemGradientParts()[3]; }
+            set { UpdateNormalItemGradientPart(3, value); }
+        }
 
         public Int32 pItemHeight = 0;
 
@@ -354,6 +789,7 @@ namespace OpenSkinDesigner.Structures
             else
                 // ------------------ das sollte die Farbe sein die in Windowssytle als default festgelegt ist ------------------------
                 // ------------------ die variablen sind ganz am anfang auch hier festgelegt wenn kein windowsstyle da  ------------------------
+                if (pListboxSelectedBackgroundColor == null)
                 pListboxSelectedBackgroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedBackground"];
 
             // ------------------------------ schauen ist Gradient vorhanden --------------------------------------------------
@@ -365,9 +801,68 @@ namespace OpenSkinDesigner.Structures
 
                 Logger.LogMessage("///////////////// cAttributeListbox.cs - Die Hintergrundfarbe ItemGradientSelected aus dem XML-Attribut ist: " + value);
 
+                pItemGradientSelectedRaw = value;
                 pItemGradientSelected = sGradient.parse(value);
             }
             // ________________________________________________________________________________________________________________
+
+            if (myNode.Attributes["itemCornerRadiusSelected"] != null)
+            {
+                int.TryParse(myNode.Attributes["itemCornerRadiusSelected"].Value.Split(';')[0].Trim(), out pItemCornerRadiusSelected);
+                if (pItemCornerRadiusSelected < 0)
+                    pItemCornerRadiusSelected = 0;
+            }
+
+
+
+            if (myNode.Attributes["itemGradient"] != null)
+            {
+                string value = myNode.Attributes["itemGradient"].Value;
+                pItemGradientRaw = value;
+                pItemGradient = sGradient.parse(value);
+            }
+
+            if (myNode.Attributes["itemCornerRadius"] != null)
+            {
+                int.TryParse(myNode.Attributes["itemCornerRadius"].Value.Split(';')[0].Trim(), out pItemCornerRadius);
+                if (pItemCornerRadius < 0)
+                    pItemCornerRadius = 0;
+            }
+
+            if (myNode.Attributes["listOrientation"] != null)
+                pListOrientation = myNode.Attributes["listOrientation"].Value.ToLower() == "grid" ? "grid" : "vertical";
+
+            if (myNode.Attributes["itemWidth"] != null)
+                int.TryParse(myNode.Attributes["itemWidth"].Value.Trim(), out pItemWidth);
+
+            if (myNode.Attributes["itemSpacing"] != null)
+            {
+                String[] spacing = myNode.Attributes["itemSpacing"].Value.Split(new char[] { ',' });
+                if (spacing.Length > 0) int.TryParse(spacing[0].Trim(), out pItemSpacingX);
+                if (spacing.Length > 1) int.TryParse(spacing[1].Trim(), out pItemSpacingY);
+            }
+
+            if (myNode.Attributes["selectionZoom"] != null)
+                int.TryParse(myNode.Attributes["selectionZoom"].Value.Trim(), out pSelectionZoom);
+
+            if (myNode.Attributes["moveBackgroundColor"] != null)
+                pMoveBackgroundColor = (sColor)cDataBase.pColors.get(myNode.Attributes["moveBackgroundColor"].Value);
+
+            if (myNode.Attributes["moveFontColor"] != null)
+                pMoveFontColor = (sColor)cDataBase.pColors.get(myNode.Attributes["moveFontColor"].Value);
+
+            if (myNode.Attributes["selection"] != null)
+            {
+                int.TryParse(myNode.Attributes["selection"].Value.Trim(), out pSelection);
+                if (pSelection < 0)
+                    pSelection = 0;
+            }
+
+            if (myNode.Attributes["enableWrapAround"] != null)
+            {
+                String wrap = myNode.Attributes["enableWrapAround"].Value.Trim().ToLower();
+                pEnableWrapAround = wrap == "1" || wrap == "true" || wrap == "yes";
+            }
 
 
 
@@ -375,6 +870,7 @@ namespace OpenSkinDesigner.Structures
 
                 pListboxSelectedForegroundColor = (sColor)cDataBase.pColors.get(node.Attributes["foregroundColorSelected"].Value);
             else
+                if (pListboxSelectedForegroundColor == null)
                 pListboxSelectedForegroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedForeground"];
 
 
@@ -424,11 +920,14 @@ namespace OpenSkinDesigner.Structures
                 int.TryParse(value, out pscrollbarOffset);
             }
 
+
             if (myNode.Attributes["scrollbarRadius"] != null)
             {
                 string value = myNode.Attributes["scrollbarRadius"].Value;
                 Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarRadius: " + value);
                 int.TryParse(value.Split(';')[0].Trim(), out pscrollbarRadius);
+                if (pscrollbarRadius < 0)
+                    pscrollbarRadius = 0;
             }
 
             if (myNode.Attributes["scrollbarSliderForegroundColor"] != null)
@@ -438,6 +937,14 @@ namespace OpenSkinDesigner.Structures
                 pscrollbarSliderForegroundColor = (sColor)cDataBase.pColors.get(myNode.Attributes["scrollbarSliderForegroundColor"].Value);
 
             }
+
+            if (myNode.Attributes["scrollbarForegroundColor"] != null && pscrollbarSliderForegroundColor == null)
+            {
+                string value = myNode.Attributes["scrollbarForegroundColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarForegroundColor : " + value);
+                pscrollbarSliderForegroundColor = (sColor)cDataBase.pColors.get(value);
+            }
+
             if (myNode.Attributes["scrollbarSliderBackgroundColor"] != null)
             {
                 string value = myNode.Attributes["scrollbarSliderBackgroundColor"].Value;
@@ -446,6 +953,14 @@ namespace OpenSkinDesigner.Structures
                 pscrollbarSliderBackgroundColor = (sColor)cDataBase.pColors.get(myNode.Attributes["scrollbarSliderBackgroundColor"].Value);
 
             }
+
+            if (myNode.Attributes["scrollbarBackgroundColor"] != null && pscrollbarSliderBackgroundColor == null)
+            {
+                string value = myNode.Attributes["scrollbarBackgroundColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBackgroundColor : " + value);
+                pscrollbarSliderBackgroundColor = (sColor)cDataBase.pColors.get(value);
+            }
+
             if (myNode.Attributes["scrollbarSliderBorderColor"] != null)
             {
                 string value = myNode.Attributes["scrollbarSliderBorderColor"].Value;
@@ -454,6 +969,14 @@ namespace OpenSkinDesigner.Structures
                 pscrollbarSliderBorderColor = (sColor)cDataBase.pColors.get(myNode.Attributes["scrollbarSliderBorderColor"].Value);
 
             }
+
+            if (myNode.Attributes["scrollbarBorderColor"] != null && pscrollbarSliderBorderColor == null)
+            {
+                string value = myNode.Attributes["scrollbarBorderColor"].Value;
+                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBorderColor : " + value);
+                pscrollbarSliderBorderColor = (sColor)cDataBase.pColors.get(value);
+            }
+
             if (myNode.Attributes["scrollbarSliderBorderWidth"] != null)
             {
                 string value = myNode.Attributes["scrollbarSliderBorderWidth"].Value;
@@ -463,29 +986,8 @@ namespace OpenSkinDesigner.Structures
                 int.TryParse(value, out pscrollbarSliderBorderWidth);
             }
 
-            // Accept both old OpenSkin Designer names and Enigma2-style names.
-            if (pscrollbarSliderForegroundColor == null && myNode.Attributes["scrollbarForegroundColor"] != null)
-            {
-                string value = myNode.Attributes["scrollbarForegroundColor"].Value;
-                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarForegroundColor : " + value);
-                pscrollbarSliderForegroundColor = (sColor)cDataBase.pColors.get(value);
-            }
 
-            if (pscrollbarSliderBackgroundColor == null && myNode.Attributes["scrollbarBackgroundColor"] != null)
-            {
-                string value = myNode.Attributes["scrollbarBackgroundColor"].Value;
-                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBackgroundColor : " + value);
-                pscrollbarSliderBackgroundColor = (sColor)cDataBase.pColors.get(value);
-            }
-
-            if (pscrollbarSliderBorderColor == null && myNode.Attributes["scrollbarBorderColor"] != null)
-            {
-                string value = myNode.Attributes["scrollbarBorderColor"].Value;
-                Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBorderColor : " + value);
-                pscrollbarSliderBorderColor = (sColor)cDataBase.pColors.get(value);
-            }
-
-            if (pscrollbarSliderBorderWidth <= 0 && myNode.Attributes["scrollbarBorderWidth"] != null)
+            if (myNode.Attributes["scrollbarBorderWidth"] != null && pscrollbarSliderBorderWidth == 0)
             {
                 string value = myNode.Attributes["scrollbarBorderWidth"].Value;
                 Logger.LogMessage("///////////////// cAttributeListbox.cs - scrollbarBorderWidth: " + value);
@@ -561,15 +1063,12 @@ namespace OpenSkinDesigner.Structures
 
             //}
 
-            //if (node.Attributes["backgroundColor"] != null)
-            //    pListboxSelectedBackgroundColor = (sColor)cDataBase.pColors.get(node.Attributes["backgroundColor"].Value);
-            //else
-            pListboxSelectedBackgroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedBackground"];
+            // Keep explicitly parsed selected colors. Use windowstyle defaults only when not set.
+            if (pListboxSelectedBackgroundColor == null)
+                pListboxSelectedBackgroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedBackground"];
 
-            //if (node.Attributes["backgroundColor"] != null)
-            //    pListboxSelectedForegroundColor = (sColor)cDataBase.pColors.get(node.Attributes["backgroundColor"].Value);
-            //else
-            pListboxSelectedForegroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedForeground"];
+            if (pListboxSelectedForegroundColor == null)
+                pListboxSelectedForegroundColor = (sColor)((sWindowStyle)cDataBase.pWindowstyles.get()).pColors["ListboxSelectedForeground"];
 
 
             //if (node.Attributes["backgroundColor"] != null)

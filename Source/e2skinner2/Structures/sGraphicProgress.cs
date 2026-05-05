@@ -39,7 +39,7 @@ namespace OpenSkinDesigner.Structures
             {
                 Logger.LogMessage("============= sGraphicProgress - ruft cGraphicRectangel.cs auf 37  = 4 ");
                 new sGraphicRectangel(pAttr, false, (float)1.0, new sColor(Color.Green))
-                    .withCornerRadius(pAttr.pCornerRadius)
+                    .withCornerRadius(pAttr.pCornerRadiusRaw)
                     .paint(sender, e);
             }
             else
@@ -54,7 +54,7 @@ namespace OpenSkinDesigner.Structures
                 {
                     Logger.LogMessage("============= sGraphicProgress - Transparent false - ruft cGraphicRectangel.cs auf 49  = 4 ");
                     new sGraphicRectangel(pAttr, true, 1.0F, ((sAttributeProgress)pAttr).pBackgroundColor)
-                        .withCornerRadius(pAttr.pCornerRadius)
+                        .withCornerRadius(pAttr.pCornerRadiusRaw)
                         .paint(sender, e);
 
                 }
@@ -75,22 +75,26 @@ namespace OpenSkinDesigner.Structures
                
                 else
                 {
-                    // -------------- in AttributeProgress wird Gradient gesetzt , wenn nicht vorhanden und foregroundColor da , wir daraus eine ForegroundGradient gemacht ---------------
+                    // Draw the progress foreground as 75% width for preview.
+                    // pForegroundGradient is created for both a plain foregroundColor and
+                    // a gradient such as: green,yellow,red,horizontal.
                     if (((sAttributeProgress)pAttr).pForegroundGradient != null)
                     {
-                        // foreground nur 3/4 malen
-
-                        Width_org = pAttr.pWidth ;
-                        pAttr.pWidth = pAttr.pWidth / 4 * 3;
-                        Logger.LogMessage("============= sGraphicProgress - ruft cGraphicRectangel.cs auf 88  = 2 ");
-                        new sGraphicRectangel(pAttr, ((sAttributeProgress)pAttr).pForegroundGradient)
-                            .withCornerRadius(pAttr.pCornerRadius)
-                            .paint(sender, e);
-                        Logger.LogMessage("============= cGraphicProgress.cs - ForegroundGradient ist vorhanden");
-
+                        int originalWidth = pAttr.pWidth;
+                        try
+                        {
+                            pAttr.pWidth = pAttr.pWidth / 4 * 3;
+                            Logger.LogMessage("============= sGraphicProgress - draw foreground color/gradient");
+                            new sGraphicRectangel(pAttr, ((sAttributeProgress)pAttr).pForegroundGradient)
+                                .withCornerRadius(pAttr.pCornerRadiusRaw)
+                                .paint(sender, e);
+                            Logger.LogMessage("============= cGraphicProgress.cs - ForegroundGradient ist vorhanden");
+                        }
+                        finally
+                        {
+                            pAttr.pWidth = originalWidth;
+                        }
                     }
-                    
-                    pAttr.pWidth = Width_org;
                 }
 
          
@@ -99,7 +103,7 @@ namespace OpenSkinDesigner.Structures
             {
                 Logger.LogMessage("============= sGraphicProgress - Border - ruft cGraphicRectangel.cs auf 95  = 4 ");
                 new sGraphicRectangel(pAttr, false, (float)pAttr.pBorderWidth, pAttr.pBorderColor)
-                    .withCornerRadius(pAttr.pCornerRadius)
+                    .withCornerRadius(pAttr.pCornerRadiusRaw)
                     .paint(sender, e);
             }
 

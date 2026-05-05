@@ -222,6 +222,62 @@ namespace OpenSkinDesigner.Structures
             }
         }
 
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameLabel),
+         DisplayName("Gradient Start Color")]
+        public String BackgroundGradientStartColor
+        {
+            get
+            {
+                if (pLabel != null) return pLabel.BackgroundGradientStartColor;
+                return "(none)";
+            }
+            set { if (pLabel != null) pLabel.BackgroundGradientStartColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameLabel),
+         DisplayName("Gradient Middle Color")]
+        public String BackgroundGradientMiddleColor
+        {
+            get
+            {
+                if (pLabel != null) return pLabel.BackgroundGradientMiddleColor;
+                return "(none)";
+            }
+            set { if (pLabel != null) pLabel.BackgroundGradientMiddleColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameLabel),
+         DisplayName("Gradient End Color")]
+        public String BackgroundGradientEndColor
+        {
+            get
+            {
+                if (pLabel != null) return pLabel.BackgroundGradientEndColor;
+                return "(none)";
+            }
+            set { if (pLabel != null) pLabel.BackgroundGradientEndColor = value; }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute(entryNameLabel),
+         DisplayName("Gradient Direction")]
+        public String BackgroundGradientDirection
+        {
+            get
+            {
+                if (pLabel != null) return pLabel.BackgroundGradientDirection;
+                return "vertical";
+            }
+            set { if (pLabel != null) pLabel.BackgroundGradientDirection = value; }
+        }
+
+
 
         [TypeConverter(typeof(cProperty.VAlignConverter)),
          CategoryAttribute(entryNameLabel)]
@@ -299,10 +355,18 @@ namespace OpenSkinDesigner.Structures
         //################# PROGRESS ###########################################
         private const String entryNameProgress = "6 Progress";
 
+        [Browsable(false)]
+        public String ProgressColor
+        {
+            get { return ProgressBackgroundColor; }
+            set { ProgressBackgroundColor = value; }
+        }
+
         [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
         [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
-         CategoryAttribute(entryNameProgress)]
-        public String ProgressColor
+         CategoryAttribute(entryNameProgress),
+         DisplayName("Progress Background Color")]
+        public String ProgressBackgroundColor
         {
             get
             {
@@ -310,6 +374,77 @@ namespace OpenSkinDesigner.Structures
                 else return "(none)";
             }
             set { if (pRender.ToLower() == "progress") pProgress.BackgroundColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorOrGradientConverter)),
+         CategoryAttribute(entryNameProgress),
+         DisplayName("Progress Foreground Color")]
+        public String ProgressForegroundColor
+        {
+            get
+            {
+                if (pRender.ToLower() == "progress") return pProgress.ForegroundColor;
+                else return "(none)";
+            }
+            set { if (pRender.ToLower() == "progress") pProgress.ForegroundColor = value; }
+        }
+
+
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("6 Progress Foreground Gradient"),
+         DisplayName("Progress Foreground Start Color")]
+        public String ProgressForegroundGradientStartColor
+        {
+            get
+            {
+                if (pRender.ToLower() == "progress") return pProgress.ForegroundGradientStartColor;
+                else return "(none)";
+            }
+            set { if (pRender.ToLower() == "progress") pProgress.ForegroundGradientStartColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("6 Progress Foreground Gradient"),
+         DisplayName("Progress Foreground Middle Color")]
+        public String ProgressForegroundGradientMiddleColor
+        {
+            get
+            {
+                if (pRender.ToLower() == "progress") return pProgress.ForegroundGradientMiddleColor;
+                else return "(none)";
+            }
+            set { if (pRender.ToLower() == "progress") pProgress.ForegroundGradientMiddleColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("6 Progress Foreground Gradient"),
+         DisplayName("Progress Foreground End Color")]
+        public String ProgressForegroundGradientEndColor
+        {
+            get
+            {
+                if (pRender.ToLower() == "progress") return pProgress.ForegroundGradientEndColor;
+                else return "(none)";
+            }
+            set { if (pRender.ToLower() == "progress") pProgress.ForegroundGradientEndColor = value; }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("6 Progress Foreground Gradient"),
+         DisplayName("Progress Foreground Direction")]
+        public String ProgressForegroundGradientDirection
+        {
+            get
+            {
+                if (pRender.ToLower() == "progress") return pProgress.ForegroundGradientDirection;
+                else return "horizontal";
+            }
+            set { if (pRender.ToLower() == "progress") pProgress.ForegroundGradientDirection = value; }
         }
 
         //######################################################################
@@ -359,6 +494,240 @@ namespace OpenSkinDesigner.Structures
                 else return 0;
             }
             set { if (pRender.ToLower() == "listbox") pListbox.ItemHeight = value; }
+        }
+
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Listbox Background Color")]
+        public String ListboxBackgroundColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.BackgroundColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.BackgroundColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Listbox Foreground Color")]
+        public String ListboxForegroundColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ForegroundColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ForegroundColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Listbox Selected Background Color")]
+        public String ListboxSelectedBackgroundColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.BackgroundColorSelected; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.BackgroundColorSelected = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Listbox Selected Foreground Color")]
+        public String ListboxSelectedForegroundColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ForegroundColorSelected; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ForegroundColorSelected = value; }
+        }
+
+        [TypeConverter(typeof(BooleanConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Enable Wrap Around")]
+        public bool ListboxEnableWrapAround
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.EnableWrapAround; else return false; }
+            set { if (pRender.ToLower() == "listbox") pListbox.EnableWrapAround = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Selection")]
+        public Int32 ListboxSelection
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.Selection; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.Selection = value; }
+        }
+
+
+        [TypeConverter(typeof(cProperty.ListOrientationConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("List Orientation")]
+        public String ListboxOrientation
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ListOrientation; else return "vertical"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ListOrientation = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Item Width")]
+        public Int32 ListboxItemWidth
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemWidth; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemWidth = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Item Spacing X")]
+        public Int32 ListboxItemSpacingX
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemSpacingX; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemSpacingX = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Item Spacing Y")]
+        public Int32 ListboxItemSpacingY
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemSpacingY; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemSpacingY = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Selection Zoom")]
+        public Int32 ListboxSelectionZoom
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.SelectionZoom; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.SelectionZoom = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Move Background Color")]
+        public String ListboxMoveBackgroundColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.MoveBackgroundColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.MoveBackgroundColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Move Font Color")]
+        public String ListboxMoveFontColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.MoveFontColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.MoveFontColor = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Item Corner Radius")]
+        public Int32 ListboxItemCornerRadius
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemCornerRadius; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemCornerRadius = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorOrGradientConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Item Gradient")]
+        public String ListboxItemGradient
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradient; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradient = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Start Color")]
+        public String ListboxItemGradientStartColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientStartColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientStartColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Middle Color")]
+        public String ListboxItemGradientMiddleColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientMiddleColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientMiddleColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item End Color")]
+        public String ListboxItemGradientEndColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientEndColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientEndColor = value; }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("7 Listbox Item Gradient"),
+         DisplayName("Item Direction")]
+        public String ListboxItemGradientDirection
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientDirection; else return "vertical"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientDirection = value; }
+        }
+
+        [CategoryAttribute(entryNameListbox),
+         DisplayName("Item Selected Corner Radius")]
+        public Int32 ListboxItemCornerRadiusSelected
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemCornerRadiusSelected; else return 0; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemCornerRadiusSelected = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorOrGradientConverter)),
+         CategoryAttribute(entryNameListbox),
+         DisplayName("Item Selected Gradient")]
+        public String ListboxItemGradientSelected
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientSelected; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientSelected = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Start Color")]
+        public String ListboxItemGradientSelectedStartColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientSelectedStartColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientSelectedStartColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Middle Color")]
+        public String ListboxItemGradientSelectedMiddleColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientSelectedMiddleColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientSelectedMiddleColor = value; }
+        }
+
+        [Editor(typeof(OpenSkinDesigner.Structures.cProperty.GradeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sColorConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected End Color")]
+        public String ListboxItemGradientSelectedEndColor
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientSelectedEndColor; else return "(none)"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientSelectedEndColor = value; }
+        }
+
+        [TypeConverter(typeof(cProperty.GradientDirectionConverter)),
+         CategoryAttribute("7 Listbox Selected Gradient"),
+         DisplayName("Item Selected Direction")]
+        public String ListboxItemGradientSelectedDirection
+        {
+            get { if (pRender.ToLower() == "listbox") return pListbox.ItemGradientSelectedDirection; else return "vertical"; }
+            set { if (pRender.ToLower() == "listbox") pListbox.ItemGradientSelectedDirection = value; }
         }
 
         //		[TypeConverter(typeof(OpenSkinDesigner.Structures.cProperty.sFontConverter)),
@@ -450,6 +819,32 @@ namespace OpenSkinDesigner.Structures
             }
         }
 
+        private bool IsImplicitProgressWidget(XmlNode node)
+        {
+            if (node == null || node.Attributes == null)
+                return false;
+
+            String lowerName = pName == null ? String.Empty : pName.ToLowerInvariant();
+
+            // Enigma2 skins often use a plain <widget name="slider" ... />
+            // without render="Progress" for simple progress/slider bars.
+            if (lowerName.Contains("slider") || lowerName.Contains("progress") || lowerName.Contains("gauge") || lowerName.Contains("bar"))
+                return node.Attributes["foregroundColor"] != null || node.Attributes["pixmap"] != null;
+
+            // A widget with foregroundColor/backgroundColor and no text/font/list/pixmap
+            // metadata is most likely a simple progress bar, not a label.
+            if (node.Attributes["foregroundColor"] != null &&
+                node.Attributes["backgroundColor"] != null &&
+                node.Attributes["font"] == null &&
+                node.Attributes["text"] == null &&
+                node.Attributes["itemHeight"] == null &&
+                node.Attributes["pixmap"] == null &&
+                node.Attributes["pixmaps"] == null)
+                return true;
+
+            return false;
+        }
+
         public sAttributeWidget(sAttribute parent, XmlNode node)
             : base(parent, node)
         {
@@ -463,6 +858,8 @@ namespace OpenSkinDesigner.Structures
             {
                 if (node.Attributes["pixmap"] != null || node.Attributes["pixmaps"] != null)
                     pRender = "Pixmap";
+                else if (IsImplicitProgressWidget(node))
+                    pRender = "Progress";
                 else if (pName == "menu" || pName == "config" || pName == "content" || pName.ToLower().Contains("list") || pName.StartsWith("timer") || (myNode.Attributes["itemHeight"] != null && myNode.Attributes["font"] != null))
                     //||(node.HasChildNodes && node.FirstChild.Attributes["type"] != null && node.FirstChild.Attributes["type"].Value.ToLower() == "templatedmulticontent")) 
                     pRender = "Listbox";

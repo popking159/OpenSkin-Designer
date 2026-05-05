@@ -38,6 +38,18 @@ namespace OpenSkinDesigner.Structures
             }
         }
 
+        // Color or comma-separated gradient string.
+        // The dropdown still lists known colors, but manual text entry is allowed
+        // for values such as: green,yellow,red,horizontal
+        public class sColorOrGradientConverter : sColorConverter
+        {
+            public override bool GetStandardValuesExclusive(
+                           ITypeDescriptorContext context)
+            {
+                return false;
+            }
+        }
+
         public class GradeEditor : UITypeEditor
         {
             public override bool GetPaintValueSupported(
@@ -185,5 +197,81 @@ namespace OpenSkinDesigner.Structures
                 return true;
             }
         }
+
+
+        // Corner radius direction presets used by the property grid.
+        public class CornerRadiusCornersConverter : StringConverter
+        {
+            public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+            {
+                return true;
+            }
+
+            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+            {
+                return new StandardValuesCollection(new string[]{
+                    "all",
+                    "top",
+                    "bottom",
+                    "left",
+                    "right",
+                    "topLeft",
+                    "topRight",
+                    "bottomLeft",
+                    "bottomRight",
+                    "topLeft,topRight",
+                    "bottomLeft,bottomRight",
+                    "topLeft,bottomLeft",
+                    "topRight,bottomRight",
+                    "topLeft,topRight,bottomLeft,bottomRight",
+                    "none"
+                });
+            }
+
+            public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+            {
+                return false;
+            }
+        }
+
+        // Gradient direction presets used by the property grid.
+        public class GradientDirectionConverter : StringConverter
+        {
+            public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+            {
+                return true;
+            }
+
+            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+            {
+                return new StandardValuesCollection(new string[]{"vertical", "horizontal"});
+            }
+
+            public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+            {
+                return true;
+            }
+        }
+
+
+        // Listbox orientation presets used by the property grid.
+        public class ListOrientationConverter : StringConverter
+        {
+            public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+            {
+                return true;
+            }
+
+            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+            {
+                return new StandardValuesCollection(new string[]{"vertical", "grid"});
+            }
+
+            public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+            {
+                return true;
+            }
+        }
+
     }
 }

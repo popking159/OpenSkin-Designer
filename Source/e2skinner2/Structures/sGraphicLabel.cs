@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -39,7 +39,7 @@ namespace OpenSkinDesigner.Structures
             {
                 Logger.LogMessage("============= sGraphicLabel - default color green - ruft cGraphicRectangel.cs auf 40  = 4 ? ");
                 new sGraphicRectangel(pAttr, false, (float)1.0, new sColor(Color.Green))
-                    .withCornerRadius(pAttrLabel.pCornerRadius)
+                    .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                     .paint(sender, e);
             }
 
@@ -68,7 +68,7 @@ namespace OpenSkinDesigner.Structures
                         {
                             Logger.LogMessage("============= sGraphicLabel - Text - Transparent false - ruft cGraphicRectangel.cs auf 69  = 2 mit Radius ");
                             new sGraphicRectangel(pAttr, pAttrLabel.pBackgroundGradient)
-                                .withCornerRadius(pAttrLabel.pCornerRadius)
+                                .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                                 .paint(sender, e);
                             Logger.LogMessage("============= cGraphicLabel.cs - Text - Transparent false BackgroundGradient aus dem XML-Attribut ist vorhanden");
                         }
@@ -77,7 +77,7 @@ namespace OpenSkinDesigner.Structures
                         {
                             Logger.LogMessage("============= sGraphicLabel - Text - Transparent false BackgroundColor - ruft cGraphicRectangel.cs auf 76  = 4 ? ");
                             new sGraphicRectangel(pAttr, true, 1.0F, ((sAttributeLabel)pAttr).pBackgroundColor)
-                                .withCornerRadius(pAttrLabel.pCornerRadius)
+                                .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                                 .paint(sender, e);
                         }
                     }
@@ -110,7 +110,7 @@ namespace OpenSkinDesigner.Structures
                     {
                         Logger.LogMessage("============= sGraphicLabel - ruft cGraphicRectangel.cs auf 48  = 2 mit Radius ");
                         new sGraphicRectangel(pAttr, pAttrLabel.pBackgroundGradient)
-                            .withCornerRadius(pAttrLabel.pCornerRadius)
+                            .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                             .paint(sender, e);
                         Logger.LogMessage("============= cGraphicLabel.cs - BackgroundGradient aus dem XML-Attribut ist vorhanden");
                     }
@@ -119,7 +119,7 @@ namespace OpenSkinDesigner.Structures
                     {
                         Logger.LogMessage("============= sGraphicLabel - Transparent - ruft cGraphicRectangel.cs auf 76  = 4 ? ");
                         new sGraphicRectangel(pAttr, true, 1.0F, ((sAttributeLabel)pAttr).pBackgroundColor)
-                            .withCornerRadius(pAttrLabel.pCornerRadius)
+                            .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                             .paint(sender, e);
                     }
                 }
@@ -129,7 +129,7 @@ namespace OpenSkinDesigner.Structures
         {
             Logger.LogMessage("============= sGraphicLabel - Border - ruft cGraphicRectangel.cs auf 83  = 4 ? ");
             new sGraphicRectangel(pAttr, false, (float)pAttr.pBorderWidth, pAttr.pBorderColor)
-                .withCornerRadius(pAttrLabel.pCornerRadius)
+                .withCornerRadius(pAttrLabel.pCornerRadiusRaw)
                 .paint(sender, e);
         }
 

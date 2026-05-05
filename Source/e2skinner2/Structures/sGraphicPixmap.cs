@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -38,7 +38,7 @@ namespace OpenSkinDesigner.Structures
                 if (!((sAttributePixmap)pAttr).pHide)
                     Logger.LogMessage("============= sGraphicPixmap - Hide - ruft cGraphicRectangel.cs auf 39  = 4 ");
                     new sGraphicRectangel(pAttr, false, (float)1.0, new sColor(Color.Blue))
-                    .withCornerRadius(pAttr.pCornerRadius)
+                    .withCornerRadius(pAttr.pCornerRadiusRaw)
                     .paint(sender, e);
             }
 
@@ -55,7 +55,7 @@ namespace OpenSkinDesigner.Structures
             {
                 Logger.LogMessage("============= sGraphicPixmap - Boarder - ruft cGraphicRectangel.cs auf 51  = 4 ");
                 new sGraphicRectangel(pAttr, false, (float)pAttr.pBorderWidth, pAttr.pBorderColor)
-                    .withCornerRadius(pAttr.pCornerRadius)
+                    .withCornerRadius(pAttr.pCornerRadiusRaw)
                     .paint(sender, e);
             }
                 /*else

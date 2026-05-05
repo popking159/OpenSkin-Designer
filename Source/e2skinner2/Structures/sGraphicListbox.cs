@@ -1,418 +1,244 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
 using System.Text;
 using System.Drawing;
 using OpenSkinDesigner.Logic;
 using System.Windows.Forms;
-using System.Diagnostics;
+using System.Drawing.Drawing2D;
 
 namespace OpenSkinDesigner.Structures
 {
     class sGraphicListbox : sGraphicElement
     {
-
-        //protected sAttributeListbox pAttr;
-
         public sGraphicListbox(sAttributeListbox attr)
             : base(attr)
         {
             pAttr = attr;
         }
 
-
-        private void PaintScrollbar(object sender, System.Windows.Forms.PaintEventArgs e)
+        private static int ClampRadius(int radius, int width, int height)
         {
-            sAttributeListbox attr = (sAttributeListbox)pAttr;
+            if (radius <= 0 || width <= 0 || height <= 0)
+                return 0;
+            int diameter = radius * 2;
+            int maxDiameter = Math.Min(width, height);
+            return diameter > maxDiameter ? maxDiameter : diameter;
+        }
 
-            if (attr.pScrollbarMode == cProperty.eScrollbarMode.showNever)
+        private static GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            int d = ClampRadius(radius, rect.Width, rect.Height);
+            if (d <= 0)
+            {
+                path.AddRectangle(rect);
+                return path;
+            }
+            path.AddArc(rect.Left, rect.Top, d, d, 180, 90);
+            path.AddArc(rect.Right - d, rect.Top, d, d, 270, 90);
+            path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+            path.AddArc(rect.Left, rect.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        private static Color ResolveColor(sColor color, Color fallback)
+        {
+            if (color == null)
+                return fallback;
+            return Logic.cProperties.getPropertyBool("enable_alpha") ? color.ColorAlpha : color.Color;
+        }
+
+        private static void FillRect(Graphics g, Rectangle rect, sColor color, int radius, Color fallback)
+        {
+            if (rect.Width <= 0 || rect.Height <= 0)
                 return;
+            using (SolidBrush brush = new SolidBrush(ResolveColor(color, fallback)))
+            using (GraphicsPath path = CreateRoundedRectanglePath(rect, radius))
+                g.FillPath(brush, path);
+        }
 
-            int scrollbarWidth = attr.pscrollbarWidth > 0 ? attr.pscrollbarWidth : 10;
-            int scrollbarOffset = attr.pscrollbarOffset > 0 ? attr.pscrollbarOffset : 0;
-            int scrollbarBorderWidth = attr.pscrollbarSliderBorderWidth > 0 ? attr.pscrollbarSliderBorderWidth : 1;
-            int scrollbarRadius = attr.pscrollbarRadius > 0 ? attr.pscrollbarRadius : 0;
-
-            int trackX = pAttr.pAbsolutX + pAttr.pWidth - scrollbarWidth - scrollbarOffset;
-            int trackY = pAttr.pAbsolutY;
-            int trackWidth = scrollbarWidth;
-            int trackHeight = pAttr.pHeight;
-
-            if (trackWidth <= 0 || trackHeight <= 0)
+        private static void DrawRect(Graphics g, Rectangle rect, sColor color, int radius, int borderWidth, Color fallback)
+        {
+            if (rect.Width <= 0 || rect.Height <= 0 || borderWidth <= 0 || color == null)
                 return;
-
-            sColor trackColor = attr.pscrollbarSliderBackgroundColor;
-            if (trackColor == null)
-                trackColor = attr.pListboxBackgroundColor;
-            if (trackColor == null)
-                trackColor = attr.pListboxForegroundColor;
-
-            // Draw the scrollbar track/background.
-            if (attr.pScrollbarBackgroundPicture != null)
+            Rectangle drawRect = rect;
+            drawRect.Width = Math.Max(1, drawRect.Width - 1);
+            drawRect.Height = Math.Max(1, drawRect.Height - 1);
+            using (Pen pen = new Pen(ResolveColor(color, fallback), borderWidth))
+            using (GraphicsPath path = CreateRoundedRectanglePath(drawRect, radius))
             {
-                new sGraphicImage(null, attr.pScrollbarBackgroundPictureName, trackX, trackY, trackWidth, trackHeight).paint(sender, e);
-            }
-            else if (!pAttr.pTransparent && trackColor != null)
-            {
-                new sGraphicRectangel(trackX, trackY, trackWidth, trackHeight, true, 1.0F, trackColor)
-                    .withCornerRadius(scrollbarRadius)
-                    .paint(sender, e);
-            }
-
-            // Draw a representative scrollbar thumb. The designer does not know the real scroll
-            // position, so preview the thumb at the top using 3/4 of the track height.
-            int thumbX = trackX;
-            int thumbY = trackY;
-            int thumbWidth = trackWidth;
-            int thumbHeight = Math.Max(1, trackHeight * 3 / 4);
-
-            if (attr.pScrollbarForegroundGradient != null)
-            {
-                new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, attr.pScrollbarForegroundGradient)
-                    .withCornerRadius(scrollbarRadius)
-                    .paint(sender, e);
-            }
-            else
-            {
-                sColor thumbColor = attr.pscrollbarSliderForegroundColor;
-                if (thumbColor == null)
-                    thumbColor = attr.pListboxForegroundColor;
-
-                if (thumbColor != null)
-                {
-                    new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, true, 1.0F, thumbColor)
-                        .withCornerRadius(scrollbarRadius)
-                        .paint(sender, e);
-                }
-            }
-
-            if (attr.pscrollbarSliderBorderColor != null && scrollbarBorderWidth > 0)
-            {
-                new sGraphicRectangel(thumbX, thumbY, thumbWidth, thumbHeight, false, (float)scrollbarBorderWidth, attr.pscrollbarSliderBorderColor)
-                    .withCornerRadius(scrollbarRadius)
-                    .paint(sender, e);
+                pen.LineJoin = LineJoin.Round;
+                g.DrawPath(pen, path);
             }
         }
 
-        
-
-        public override void paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private static bool IsUsableGradient(sGradient gradient)
         {
-            // Hole den Namen der aufrufenden Methode
-            string callerName = new StackTrace().GetFrame(1).GetMethod().Name;
-            // Log-Nachricht erstellen
-            string logMessage = $"============= sGraphicListbox - paint () wurde von {callerName} aufgerufen .";
-            // Loggen
-            Logger.LogMessage(logMessage);
-            // Weiter mit der eigentlichen Funktion
+            return gradient != null && gradient.ColorStart != null && gradient.ColorEnd != null;
+        }
 
-  
-            if (!pAttr.pTransparent)
+        private static void FillGradient(Graphics g, Rectangle rect, sGradient gradient, int radius)
+        {
+            if (!IsUsableGradient(gradient) || rect.Width <= 0 || rect.Height <= 0)
+                return;
+
+            Color startColor = ResolveColor(gradient.ColorStart, Color.Transparent);
+            Color endColor = ResolveColor(gradient.ColorEnd, startColor);
+            Color middleColor = gradient.ColorMid != null ? ResolveColor(gradient.ColorMid, startColor) : startColor;
+
+            bool horizontal = gradient.Direction == eGradientDirection.Horizontal;
+            PointF start = new PointF(rect.Left, rect.Top);
+            PointF end = horizontal ? new PointF(rect.Right, rect.Top) : new PointF(rect.Left, rect.Bottom);
+            if (start == end)
+                end = new PointF(rect.Left + 1, rect.Top);
+
+            using (LinearGradientBrush brush = new LinearGradientBrush(start, end, startColor, endColor))
+            using (GraphicsPath path = CreateRoundedRectanglePath(rect, radius))
             {
-                //Background
-                Int32 tx = (Int32)pAttr.pAbsolutX;
-                Int32 ty = (Int32)pAttr.pAbsolutY;
-                Int32 tw = (Int32)pAttr.pWidth;
-                Int32 th = (Int32)pAttr.pHeight;
-
-                if (((sAttributeListbox)pAttr).pBackgroundPixmap != null)
+                brush.InterpolationColors = new ColorBlend
                 {
+                    Positions = new float[] { 0f, 0.5f, 1f },
+                    Colors = new Color[] { startColor, middleColor, endColor }
+                };
+                g.FillPath(brush, path);
+            }
+        }
 
-                    new sGraphicImage(pAttr, ((sAttributeListbox)pAttr).pBackgroundPixmapName).paint(sender, e);
+        private static List<string> PreviewEntries(sAttributeListbox attr)
+        {
+            if (attr.pPreviewEntries != null && attr.pPreviewEntries.Count > 0)
+                return attr.pPreviewEntries;
+            return new List<string> { "Plugin Browser", "Plugin Manager", "Skin Setup", "Network", "System", "Information", "Extensions", "Settings" };
+        }
+
+        private static Font PreviewFont(sAttributeListbox attr, float sizeOffset)
+        {
+            float size = attr.pFontSize > 0 ? attr.pFontSize : 24f;
+            size += sizeOffset;
+            if (size < 6f) size = 6f;
+            string family = "Arial";
+            try
+            {
+                if (attr.pFont != null && !String.IsNullOrEmpty(attr.pFont.Name))
+                    family = attr.pFont.Name;
+            }
+            catch { }
+            try { return new Font(family, size, GraphicsUnit.Pixel); }
+            catch { return new Font("Arial", size, GraphicsUnit.Pixel); }
+        }
+
+        private void DrawItems(Graphics g, sAttributeListbox attr)
+        {
+            List<string> entries = PreviewEntries(attr);
+            bool grid = (attr.pListOrientation != null && attr.pListOrientation.ToLower() == "grid");
+            int itemHeight = attr.pItemHeight > 0 ? attr.pItemHeight : (grid ? 170 : 50);
+            int itemWidth = grid ? (attr.pItemWidth > 0 ? attr.pItemWidth : Math.Max(1, itemHeight * 2)) : attr.pWidth;
+            int spacingX = grid ? attr.pItemSpacingX : 0;
+            int spacingY = grid ? attr.pItemSpacingY : 0;
+            int selectedIndex = Math.Max(0, Math.Min(attr.pSelection, entries.Count - 1));
+            int contentWidth = attr.pWidth;
+            if (attr.pScrollbarMode != cProperty.eScrollbarMode.showNever)
+            {
+                int sw = attr.pscrollbarWidth > 0 ? attr.pscrollbarWidth : 10;
+                contentWidth -= sw + Math.Max(0, attr.pscrollbarOffset);
+            }
+            if (!grid)
+                itemWidth = Math.Max(1, contentWidth);
+
+            int columns = 1;
+            if (grid)
+                columns = Math.Max(1, contentWidth / Math.Max(1, itemWidth + spacingX));
+
+            using (Font normalFont = PreviewFont(attr, 0))
+            using (Font selectedFont = PreviewFont(attr, attr.pSelectionZoom))
+            {
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    int row = grid ? i / columns : i;
+                    int col = grid ? i % columns : 0;
+                    int x = attr.pAbsolutX + col * (itemWidth + spacingX);
+                    int y = attr.pAbsolutY + row * (itemHeight + spacingY);
+                    if (y >= attr.pAbsolutY + attr.pHeight)
+                        break;
+                    Rectangle itemRect = new Rectangle(x, y, Math.Min(itemWidth, attr.pAbsolutX + contentWidth - x), itemHeight);
+                    if (itemRect.Width <= 0 || itemRect.Height <= 0)
+                        continue;
+
+                    bool selected = i == selectedIndex;
+                    int radius = selected ? (attr.pItemCornerRadiusSelected > 0 ? attr.pItemCornerRadiusSelected : attr.pItemCornerRadius) : attr.pItemCornerRadius;
+                    sGradient gradient = selected ? attr.pItemGradientSelected : attr.pItemGradient;
+                    sColor background = selected ? attr.pListboxSelectedBackgroundColor : attr.pListboxBackgroundColor;
+                    sColor foreground = selected ? attr.pListboxSelectedForegroundColor : attr.pListboxForegroundColor;
+
+                    if (selected && attr.pSelectionPixmapName != null)
+                        new sGraphicImage(null, attr.pSelectionPixmapName, itemRect.X, itemRect.Y, itemRect.Width, itemRect.Height).paint(null, new PaintEventArgs(g, itemRect));
+                    else if (IsUsableGradient(gradient))
+                        FillGradient(g, itemRect, gradient, radius);
+                    else if (!attr.pTransparent || selected)
+                        FillRect(g, itemRect, background, radius, selected ? Color.DimGray : Color.Transparent);
+
+                    Rectangle textRect = itemRect;
+                    textRect.Inflate(-8, -4);
+                    using (SolidBrush brush = new SolidBrush(ResolveColor(foreground, selected ? Color.White : Color.Gainsboro)))
+                    using (StringFormat format = new StringFormat())
+                    {
+                        format.Alignment = grid ? StringAlignment.Center : StringAlignment.Near;
+                        format.LineAlignment = StringAlignment.Center;
+                        format.Trimming = StringTrimming.EllipsisCharacter;
+                        format.FormatFlags = 0;
+                        g.DrawString(entries[i], selected ? selectedFont : normalFont, brush, textRect, format);
+                    }
                 }
+            }
+        }
+
+        private void DrawScrollbar(Graphics g, sAttributeListbox attr)
+        {
+            if (attr.pScrollbarMode == cProperty.eScrollbarMode.showNever)
+                return;
+            int scrollbarWidth = attr.pscrollbarWidth > 0 ? attr.pscrollbarWidth : 10;
+            int scrollbarOffset = attr.pscrollbarOffset >= 0 ? attr.pscrollbarOffset : 0;
+            int radius = attr.pscrollbarRadius > 0 ? attr.pscrollbarRadius : 0;
+            int trackX = attr.pAbsolutX + attr.pWidth - scrollbarWidth - scrollbarOffset;
+            if (trackX < attr.pAbsolutX)
+                trackX = attr.pAbsolutX + Math.Max(0, attr.pWidth - scrollbarWidth);
+            Rectangle trackRect = new Rectangle(trackX, attr.pAbsolutY, scrollbarWidth, attr.pHeight);
+            if (trackRect.Width <= 0 || trackRect.Height <= 0)
+                return;
+
+            sColor trackColor = attr.pscrollbarSliderBackgroundColor ?? attr.pListboxBackgroundColor;
+            if (!attr.pTransparent)
+                FillRect(g, trackRect, trackColor, radius, Color.FromArgb(80, Color.Gray));
+
+            int thumbHeight = Math.Max(1, (trackRect.Height * 3) / 4);
+            Rectangle thumbRect = new Rectangle(trackRect.X, trackRect.Y, trackRect.Width, thumbHeight);
+            if (IsUsableGradient(attr.pScrollbarForegroundGradient))
+                FillGradient(g, thumbRect, attr.pScrollbarForegroundGradient, radius);
+            else
+                FillRect(g, thumbRect, attr.pscrollbarSliderForegroundColor ?? attr.pListboxForegroundColor, radius, Color.LightGray);
+            DrawRect(g, thumbRect, attr.pscrollbarSliderBorderColor, radius, attr.pscrollbarSliderBorderWidth, Color.Black);
+        }
+
+        public override void paint(object sender, PaintEventArgs e)
+        {
+            sAttributeListbox attr = (sAttributeListbox)pAttr;
+            Graphics g = e.Graphics;
+            SmoothingMode oldSmoothing = g.SmoothingMode;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            if (!attr.pTransparent)
+            {
+                Rectangle bg = new Rectangle(attr.pAbsolutX, attr.pAbsolutY, attr.pWidth, attr.pHeight);
+                if (attr.pBackgroundPixmap != null)
+                    new sGraphicImage(attr, attr.pBackgroundPixmapName).paint(sender, e);
                 else
-                {
-                    Logger.LogMessage("============= sGraphicListbox - ruft cGraphicRectangel.cs auf 53  = 7 ");
-                    new sGraphicRectangel((Int32)(tx > 0 ? tx : 0), (Int32)(ty > 0 ? ty : 0), (Int32)(tw > 0 ? tw : 0), (Int32)(th > 0 ? th : 0), true, (float)1.0, ((sAttributeListbox)pAttr).pListboxBackgroundColor)
-                        
-                        .paint(sender, e);
-                }
+                    FillRect(g, bg, attr.pListboxBackgroundColor, (int)attr.pCornerRadius, Color.Transparent);
             }
 
-            //BorderLayout
-            Int32 x = pAttr.pAbsolutX, xm = pAttr.pAbsolutX + pAttr.pWidth;
-
-            if (((sAttributeListbox)pAttr).pbpTopLeftName != null)
-            {
-                new sGraphicImage(pAttr,
-                    ((sAttributeListbox)pAttr).pbpTopLeftName,
-                    x - (Int32)(((sAttributeListbox)pAttr).pbpLeft != null ? ((sAttributeListbox)pAttr).pbpLeft.Width : 0),
-                    pAttr.pAbsolutY - (Int32)((sAttributeListbox)pAttr).pbpTopLeft.Height
-                    ).paint(sender, e);
-                //painter.blit(tl, ePoint(x, pos.top()));
-                //x += (UInt32)pAttr.pbpTopLeft.Width;
-            }
-
-            if (((sAttributeListbox)pAttr).pbpTopRightName != null)
-            {
-                //xm -= (UInt32)pAttr.pbpTopRight.Width;
-                new sGraphicImage(pAttr,
-                    ((sAttributeListbox)pAttr).pbpTopRightName,
-                    xm + (Int32)(((sAttributeListbox)pAttr).pbpRight != null ? ((sAttributeListbox)pAttr).pbpRight.Width : 0) - (Int32)((sAttributeListbox)pAttr).pbpTopRight.Width,
-                    pAttr.pAbsolutY - (Int32)((sAttributeListbox)pAttr).pbpTopRight.Height
-                    ).paint(sender, e);
-                //painter.blit(tr, ePoint(xm, pos.top()), pos);
-            }
-
-            if (((sAttributeListbox)pAttr).pbpTopName != null)
-            {
-                x += (Int32)(((sAttributeListbox)pAttr).pbpTopLeft != null ? ((sAttributeListbox)pAttr).pbpTopLeft.Width : 0) - (Int32)(((sAttributeListbox)pAttr).pbpLeft != null ? ((sAttributeListbox)pAttr).pbpLeft.Width : 0);
-                int diff = (((sAttributeListbox)pAttr).pbpRight != null ? ((sAttributeListbox)pAttr).pbpRight.Width : 0) - (((sAttributeListbox)pAttr).pbpTopRight != null ? ((sAttributeListbox)pAttr).pbpTopRight.Width : 0);
-                xm -= (Int32)(diff > 0 ? diff : -diff);
-                while (x < xm)
-                {
-                    new sGraphicImage(pAttr,
-                        ((sAttributeListbox)pAttr).pbpTopName,
-                        x,
-                        pAttr.pAbsolutY - (Int32)((sAttributeListbox)pAttr).pbpTop.Height,
-                        xm - x,
-                        (Int32)((sAttributeListbox)pAttr).pbpTop.Height
-                        ).paint(sender, e);
-                    //painter.blit(t, ePoint(x, pos.top()), eRect(x, pos.top(), xm - x, pos.height()));
-                    x += (Int32)((sAttributeListbox)pAttr).pbpTop.Width;
-                }
-            }
-
-            x = pAttr.pAbsolutX;
-            xm = pAttr.pAbsolutX + pAttr.pWidth;
-
-            if (((sAttributeListbox)pAttr).pbpBottomLeftName != null)
-            {
-                new sGraphicImage(pAttr,
-                    ((sAttributeListbox)pAttr).pbpBottomLeftName,
-                    x - (Int32)(((sAttributeListbox)pAttr).pbpLeft != null ? ((sAttributeListbox)pAttr).pbpLeft.Width : 0),
-                    pAttr.pAbsolutY + pAttr.pHeight
-                    ).paint(sender, e);
-                //painter.blit(bl, ePoint(pos.left(), pos.bottom()-bl->size().height()));
-                //x += (UInt32)pAttr.pbpBottomLeft.Width;
-            }
-
-            if (((sAttributeListbox)pAttr).pbpBottomRightName != null)
-            {
-                //xm -= (UInt32)pAttr.pbpBottomRight.Width;
-                new sGraphicImage(pAttr,
-                    ((sAttributeListbox)pAttr).pbpBottomRightName,
-                    xm + (Int32)(((sAttributeListbox)pAttr).pbpRight != null ? ((sAttributeListbox)pAttr).pbpRight.Width : 0) - (Int32)((sAttributeListbox)pAttr).pbpBottomRight.Width,
-                    pAttr.pAbsolutY + pAttr.pHeight
-                    ).paint(sender, e);
-                //painter.blit(br, ePoint(xm, pos.bottom()-br->size().height()), eRect(x, pos.bottom()-br->size().height(), pos.width() - x, bl->size().height()));
-            }
-
-            if (((sAttributeListbox)pAttr).pbpBottomName != null)
-            {
-                x += (Int32)(((sAttributeListbox)pAttr).pbpBottomLeft != null ? ((sAttributeListbox)pAttr).pbpBottomLeft.Width : 0) - (Int32)(((sAttributeListbox)pAttr).pbpLeft != null ? ((sAttributeListbox)pAttr).pbpLeft.Width : 0);
-                int diff = (((sAttributeListbox)pAttr).pbpRight != null ? ((sAttributeListbox)pAttr).pbpRight.Width : 0) - (((sAttributeListbox)pAttr).pbpBottomRight != null ? ((sAttributeListbox)pAttr).pbpBottomRight.Width : 0);
-                xm -= (Int32)(diff > 0 ? diff : -diff);
-                while (x < xm)
-                {
-                    new sGraphicImage(pAttr,
-                        ((sAttributeListbox)pAttr).pbpBottomName,
-                        x,
-                        pAttr.pAbsolutY + pAttr.pHeight,
-                        xm - x,
-                        (Int32)((sAttributeListbox)pAttr).pbpBottom.Height
-                        ).paint(sender, e);
-                    //painter.blit(b, ePoint(x, pos.bottom()-b->size().height()), eRect(x, pos.bottom()-b->size().height(), xm - x, pos.height()));
-                    x += (Int32)((sAttributeListbox)pAttr).pbpBottom.Width;
-                }
-            }
-
-            Int32 y = 0;
-            //if (pAttr.pbpTopLeft != null)
-            //    y = (UInt32)pAttr.pbpTopLeft.Height;
-
-            y += pAttr.pAbsolutY;
-
-            Int32 ym = pAttr.pAbsolutY + pAttr.pHeight;
-            //if (pAttr.pbpBottomLeft != null)
-            //    ym -= (UInt32)pAttr.pbpBottomLeft.Height;
-
-            if (((sAttributeListbox)pAttr).pbpLeftName != null)
-            {
-                while (y < ym)
-                {
-                    new sGraphicImage(pAttr,
-                        ((sAttributeListbox)pAttr).pbpLeftName,
-                        pAttr.pAbsolutX - (Int32)((sAttributeListbox)pAttr).pbpLeft.Width,
-                        y,
-                        (Int32)((sAttributeListbox)pAttr).pbpLeft.Width,
-                        ym - y
-                        ).paint(sender, e);
-                    //painter.blit(l, ePoint(pos.left(), y), eRect(pos.left(), y, pos.width(), ym - y));
-                    y += (Int32)((sAttributeListbox)pAttr).pbpLeft.Height;
-                }
-            }
-
-            y = 0;
-
-            //if (pAttr.pbpTopRight != null)
-            //    y = (UInt32)pAttr.pbpTopRight.Height;
-
-            y += pAttr.pAbsolutY;
-
-            ym = pAttr.pAbsolutY + pAttr.pHeight;
-            //if (pAttr.pbpBottomRight != null)
-            //    ym -= (UInt32)pAttr.pbpBottomRight.Height;
-
-            if (((sAttributeListbox)pAttr).pbpRightName != null)
-            {
-                while (y < ym)
-                {
-                    new sGraphicImage(pAttr,
-                        ((sAttributeListbox)pAttr).pbpRightName,
-                        pAttr.pAbsolutX + pAttr.pWidth,
-                        y,
-                        (Int32)((sAttributeListbox)pAttr).pbpRight.Width,
-                        ym - y
-                        ).paint(sender, e);
-                    //painter.blit(r, ePoint(pos.right() - r->size().width(), y), eRect(pos.right()-r->size().width(), y, r->size().width(), ym - y));
-                    y += (Int32)((sAttributeListbox)pAttr).pbpRight.Height;
-                }
-            }
-
-            // scrollbar
-            //painter.clip(eRect(m_scrollbar->position() - ePoint(5, 0), eSize(5, m_scrollbar->size().height())));
-
-            // entries
-            if (((sAttributeListbox)pAttr).pPreviewEntries != null)
-            {
-                if (((sAttributeListbox)pAttr).pPreviewEntries.Count >= 1)
-                {
-                    int itemHeight = ((sAttributeListbox)pAttr).pItemHeight;
-
-                    sFont font = null;
-                    float fontSize = 0;
-                    if (((sAttributeListbox)pAttr).pFont != null)
-                    {
-                        font = ((sAttributeListbox)pAttr).pFont;
-                        fontSize = font.Size;
-                    }
-                    else
-                    {
-                        font = cDataBase.getFont("Regular");
-                        fontSize = 20;
-                    }
-
-
-                    cProperty.eHAlign halign = cProperty.eHAlign.Left;
-                    cProperty.eVAlign valign = cProperty.eVAlign.Top;
-                    sColor foreground = ((sAttributeListbox)pAttr).pListboxSelectedForegroundColor;
-                    sColor background = ((sAttributeListbox)pAttr).pListboxSelectedBackgroundColor;
-                    String entry = ((sAttributeListbox)pAttr).pPreviewEntries[0];
-
-                    // ----------------------------------- Item Selection malen Foreground -----------------------------------------------------
-
-                    // Selection Pixmap
-                    if (((sAttributeListbox)pAttr).pSelectionPixmapName != null)
-                    {
-
-                        Logger.LogMessage("============= sGraphicListbox - PixmapName - ruft cGraphicImage.cs auf 238  = 7 ");
-                        new sGraphicImage(null, ((sAttributeListbox)pAttr).pSelectionPixmapName, pAttr.pAbsolutX, pAttr.pAbsolutY, pAttr.pWidth, ((sAttributeListbox)pAttr).pItemHeight).paint(sender, e);
-                    }
-
-                    else
-                    {
-                        // ---------------------- wichtig wenn Pixmap gemalt hier kein background oder gradient mal , wird dann pixmap uebermalt ------------------------------------
-                        int meineBreite = pWidth - ((sAttributeListbox)pAttr).pscrollbarOffset - ((sAttributeListbox)pAttr).pscrollbarWidth;
-
-
-                        if (((sAttributeListbox)pAttr).pItemGradientSelected != null)
-                        {
-
-
-                            // hier noch die scrollbar abziehen , widht und offset plus 10 min 
-                            Logger.LogMessage("============= sGraphicListbox.cs - ItemGradientSelected ist vorhanden ");
-                            Logger.LogMessage("============= sGraphicListbox - Selection Gradient - ruft cGraphicRectangel.cs auf 251  = 5 mit Gradient ");
-                            new sGraphicRectangel(pAttr.pAbsolutX, pAttr.pAbsolutY, meineBreite, ((sAttributeListbox)pAttr).pItemHeight, ((sAttributeListbox)pAttr).pItemGradientSelected)
-                                .withCornerRadius(pAttr.pCornerRadius)
-                                .paint(sender, e);
-                        }
-                        else
-                        {
-                            Logger.LogMessage("============= sGraphicListbox - Selection Background - ruft cGraphicRectangel.cs auf 258  = 7 ");
-                            new sGraphicRectangel(pAttr.pAbsolutX, pAttr.pAbsolutY, meineBreite, ((sAttributeListbox)pAttr).pItemHeight, true, 1.0F, ((sAttributeListbox)pAttr).pListboxSelectedBackgroundColor)
-                                .withCornerRadius(pAttr.pCornerRadius)
-                                .paint(sender, e);
-                        }
-                    }
-                    // ---------------------------------------- Scrollbar -----------------------------------------------------------------------------
-                    PaintScrollbar(sender, e);
-                    // -------------------------------------------------Scrollbar Ende -------------------------------------------------------------------------------
-
-
-                    if (pAttr.pTransparent)
-                    {
-                        Logger.LogMessage("============= sGraphicListbox - Transparent true - ruft cGraphicFont.cs auf 367  = 7 ");
-                        new sGraphicFont(null, pAttr.pAbsolutX, pAttr.pAbsolutY, entry, fontSize, font, foreground, halign, valign)
-                            .paint(sender, e);
-                    }
-                    else
-                    {
-
-                        //float Radius = pAttr.pCornerRadius;
-                        Logger.LogMessage("============= sGraphicListbox - Transparent false - ruft cGraphicFont.cs auf 372  = 7 ");
-                        new sGraphicFont(null, pAttr.pAbsolutX, pAttr.pAbsolutY, entry, fontSize, font, foreground, background == null ? new sColor(Color.Black) : background, halign, valign)
-                            .paint(sender, e);
-                    }
-
-                    if (((sAttributeListbox)pAttr).pPreviewEntries.Count > 1)
-                    {
-                        foreground = ((sAttributeListbox)pAttr).pListboxForegroundColor;
-                        background = ((sAttributeListbox)pAttr).pListboxBackgroundColor;
-
-                        for (int i = 1; i < ((sAttributeListbox)pAttr).pPreviewEntries.Count; i++)
-                        {
-                            //Listen Einträge
-                            if (i * itemHeight >= pAttr.pHeight)
-                                // Abbrechen wenn Höhe der Listen Einträge größer als Höhe der Liste
-                                break;
-
-                            entry = ((sAttributeListbox)pAttr).pPreviewEntries[i];
-
-                            // NonSelection Pixmap
-                            if (((sAttributeListbox)pAttr).pBackgroundPixmapName != null)
-                            {
-                                Logger.LogMessage("============= sGraphicListbox - BackgroundPixmapName ja -  ruft cGraphicImage.cs auf 393  = 7 ");
-                                new sGraphicImage(null, ((sAttributeListbox)pAttr).pBackgroundPixmapName, pAttr.pAbsolutX, pAttr.pAbsolutY + i * itemHeight, pAttr.pWidth, ((sAttributeListbox)pAttr).pItemHeight).paint(sender, e);
-                            }
-
-                            else
-                            {
-                                Logger.LogMessage("============= sGraphicListbox - BackgroundPixmapName nein -  ruft cGraphicRectangel.cs auf 399  = 7 ");
-                                new sGraphicRectangel(pAttr.pAbsolutX, pAttr.pAbsolutY + i * itemHeight, pAttr.pWidth, ((sAttributeListbox)pAttr).pItemHeight, true, 1.0F, ((sAttributeListbox)pAttr).pListboxBackgroundColor).paint(sender, e);
-                            }
-
-                            if (pAttr.pTransparent)
-                            {
-                                Logger.LogMessage("============= sGraphicListbox - Transparent true - ruft cGraphicFont.cs auf 405  = 7 ");
-                                new sGraphicFont(null, pAttr.pAbsolutX, pAttr.pAbsolutY + i * itemHeight, entry, fontSize, font, foreground, halign, valign).paint(sender, e);
-                            }
-                            else
-                            {
-                                Logger.LogMessage("============= sGraphicListbox - Transparent false - ruft cGraphicFont.cs auf 410  = 7 ");
-                                new sGraphicFont(null, pAttr.pAbsolutX, pAttr.pAbsolutY + i * itemHeight, entry, fontSize, font, foreground, background == null ? new sColor(Color.Black) : background, halign, valign).paint(sender, e);
-                            }
-
-                        }
-                    }
-                }
-                else
-                {
-                    // Selection Pixmap
-                    if (((sAttributeListbox)pAttr).pSelectionPixmapName != null)
-                    {
-                        Logger.LogMessage("============= sGraphicListbox - Selection PixmapName ja - ruft cGraphicImage.cs auf 422  = 4 ");
-                        new sGraphicImage(pAttr, ((sAttributeListbox)pAttr).pSelectionPixmapName).paint(sender, e);
-                    }
-
-                    else
-                    {
-                        Logger.LogMessage("============= sGraphicListbox - SelectionPixmapName nein -  ruft cGraphicRectangel.cs auf 428  = 7 ");
-                        new sGraphicRectangel(pAttr.pAbsolutX, pAttr.pAbsolutY, pAttr.pWidth, ((sAttributeListbox)pAttr).pItemHeight, true, 1.0F, ((sAttributeListbox)pAttr).pListboxSelectedBackgroundColor).paint(sender, e);
-                    }
-
-                }
-            }
+            DrawItems(g, attr);
+            DrawScrollbar(g, attr);
+            g.SmoothingMode = oldSmoothing;
         }
     }
 }
