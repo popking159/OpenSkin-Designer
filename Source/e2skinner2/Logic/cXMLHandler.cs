@@ -381,17 +381,58 @@ namespace OpenSkinDesigner.Logic
             return null;
         }
 
+        private sElementList FindElementByHandle(int hash)
+        {
+            foreach (sElementList temp in ElementList)
+            {
+                if (temp.Handle == hash)
+                    return temp;
+            }
+            return null;
+        }
+
+        private XmlNode GetRealParentNodeForTreeParent(sElementList child, sElementList treeParent)
+        {
+            if (child == null || treeParent == null)
+                return null;
+
+            // Included files are shown under the <include> tree node, but their
+            // screens/panels are not XML children of the <include> tag. They are
+            // children of the included XmlDocument.DocumentElement.
+            XmlDocument includedDocument = treeParent.TreeNode != null ? treeParent.TreeNode.Tag as XmlDocument : null;
+            if (includedDocument != null && child.Node != null && child.Node.OwnerDocument == includedDocument)
+                return includedDocument.DocumentElement;
+
+            return treeParent.Node;
+        }
+
         public void XmlReplaceNodeAndChilds(int hash, String node)
         {
-            // 3. Remove all Child Nodes
-            // 1. Find the node to replace
-            // 2. Replace it
-            
-            // 4. Import the Child Nodes
-            // 5. Find old Parent and give him new Element
+            // v4.2.2.0 MOD:
+            // Parse/validate the replacement first and replace nodes in the real XML parent.
+            // This is important for <include filename="skin_templates.xml" /> because the
+            // tree parent is the <include> node, while the real XML parent is the included
+            // document root. Without this, editing a screen/panel from the included template
+            // file in the code panel can make it disappear and not save correctly.
 
-            XmlTextReader xmlReader = new XmlTextReader(new StringReader(node));
+            sElementList target = FindElementByHandle(hash);
+            if (target == null)
+                return;
 
+            bool deleteNode = String.IsNullOrEmpty(node);
+            XmlNode newNode = null;
+
+            if (!deleteNode)
+            {
+                XmlTextReader xmlReader = new XmlTextReader(new StringReader(node));
+                xmlReader.WhitespaceHandling = WhitespaceHandling.Significant;
+                newNode = target.Node.OwnerDocument.ReadNode(xmlReader);
+
+                if (newNode == null)
+                    throw new XmlException("The edited XML is empty or invalid.");
+            }
+
+            // Remove old tree children only after the edited XML was parsed successfully.
             for (int i = 0; i < ElementList.Count; )
             {
                 sElementList tempChild = (sElementList)ElementList[i];
@@ -404,46 +445,41 @@ namespace OpenSkinDesigner.Logic
                     i++;
             }
 
-            foreach (sElementList temp in ElementList)
+            if (target.ParentHandle == 0)
             {
-                if (temp.Handle == hash)
-                {
-                    if (temp.ParentHandle == 0)
-                    {
-                        //We are the root element
+                // Root skin document.
+                if (deleteNode)
+                    return;
 
-                        temp.Node.OwnerDocument.ReplaceChild(temp.Node.OwnerDocument.ReadNode(xmlReader), temp.Node);
-                        temp.Node = temp.Node.OwnerDocument.DocumentElement/*.ParentNode*/;
-                        XmlRekursivImport(temp.TreeNode.Nodes, temp.Node.ChildNodes);
+                target.Node.OwnerDocument.ReplaceChild(newNode, target.Node);
+                target.Node = target.Node.OwnerDocument.DocumentElement;
+                target.TreeNode.Nodes.Clear();
+                XmlRekursivImport(target.TreeNode.Nodes, target.Node.ChildNodes);
+                return;
+            }
+
+            sElementList treeParent = FindElementByHandle(target.ParentHandle);
+            XmlNode realParentNode = GetRealParentNodeForTreeParent(target, treeParent);
+
+            if (realParentNode == null)
+                return;
+
+            for (int i = 0; i < realParentNode.ChildNodes.Count; i++)
+            {
+                if (realParentNode.ChildNodes[i] == target.Node)
+                {
+                    if (deleteNode)
+                    {
+                        realParentNode.RemoveChild(realParentNode.ChildNodes[i]);
+                        target.TreeNode.Remove();
+                        ElementList.Remove(target);
                     }
                     else
                     {
-                        // Find parent
-                        foreach (sElementList tempParent in ElementList)
-                        {
-                            if (tempParent.Handle == temp.ParentHandle)
-                            {
-                                //Find with the old node, the childnode and replace it
-                                for (int i = 0; i < tempParent.Node.ChildNodes.Count; i++)
-                                    if (tempParent.Node.ChildNodes[i] == temp.Node)
-                                    {
-                                        if (node.Length == 0) // Delete node
-                                        {
-                                            tempParent.Node.RemoveChild(tempParent.Node.ChildNodes[i]);
-                                            temp.TreeNode.Remove();
-                                            ElementList.Remove(temp);
-                                        }
-                                        else // Replace node
-                                        {
-                                            temp.Node = temp.Node.OwnerDocument.ReadNode(xmlReader);
-                                            tempParent.Node.ReplaceChild(temp.Node, tempParent.Node.ChildNodes[i]);
-                                            XmlRekursivImport(temp.TreeNode.Nodes, temp.Node.ChildNodes);
-                                        }
-                                        break;
-                                    }
-                                break;
-                            }
-                        }
+                        target.Node = newNode;
+                        realParentNode.ReplaceChild(target.Node, realParentNode.ChildNodes[i]);
+                        target.TreeNode.Nodes.Clear();
+                        XmlRekursivImport(target.TreeNode.Nodes, target.Node.ChildNodes);
                     }
                     break;
                 }

@@ -692,43 +692,9 @@ namespace OpenSkinDesigner.Frames
             ftmp.setup(pXmlHandler);
             ftmp.ShowDialog();
         }
-
-        private void DrawDesignerMultiSelection(PaintEventArgs e)
-        {
-            if (designerMultiSelectedAttributes == null || designerMultiSelectedAttributes.Count == 0)
-                return;
-
-            Graphics g = e.Graphics;
-            float zoom = pDesigner != null ? pDesigner.zoomLevel() : 1.0F;
-            if (zoom <= 0)
-                zoom = 1.0F;
-
-            using (Pen selectionPen = new Pen(Color.DeepSkyBlue, 3.0F / zoom))
-            using (Pen innerPen = new Pen(Color.White, 1.0F / zoom))
-            {
-                selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-
-                foreach (sAttribute attr in designerMultiSelectedAttributes)
-                {
-                    if (attr == null || attr.myNode == null)
-                        continue;
-
-                    Rectangle rect = new Rectangle(attr.pAbsolutX, attr.pAbsolutY, attr.pWidth, attr.pHeight);
-                    if (rect.Width <= 0 || rect.Height <= 0)
-                        continue;
-
-                    g.DrawRectangle(selectionPen, rect);
-                    Rectangle inner = new Rectangle(rect.X + 2, rect.Y + 2, rect.Width - 4, rect.Height - 4);
-                    if (inner.Width > 0 && inner.Height > 0)
-                        g.DrawRectangle(innerPen, inner);
-                }
-            }
-        }
-
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             pDesigner.paint(sender, e);
-            DrawDesignerMultiSelection(e);
         }
 
         private bool pSemaphorePropertyGrid = false;
@@ -2047,7 +2013,6 @@ namespace OpenSkinDesigner.Frames
                         designerMultiSelectedTreeNodes.RemoveAt(i);
 
                     TslStatus.Text = GetTranslation("Removed from multi selection");
-                    pictureBox1.Invalidate();
                     return;
                 }
             }
@@ -2068,7 +2033,6 @@ namespace OpenSkinDesigner.Frames
             propertyGrid1.SelectedObject = attr;
             propertyGrid1.Refresh();
             TslStatus.Text = GetTranslation("Multi selected") + ": " + designerMultiSelectedAttributes.Count.ToString();
-            pictureBox1.Invalidate();
         }
 
         private void MoveDesignerMultiSelection(Int32 deltaX, Int32 deltaY)
