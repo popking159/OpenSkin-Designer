@@ -1,48 +1,41 @@
-﻿# Changelog
+# Changelog
 
-## v4.2.1.0 MOD by odem2014
+### v4.2.2.0 MOD by odem2014
+created by [odem2014](https://github.com/odem2014)
+* Updated application title/version to `OpenSkin Designer MOD by odem2014 v4.2.2.0`.
+* Added designer-tree Move Up and Move Down controls for screens, panels, widgets, labels, pixmaps, and other items.
+* Added right-click Copy, Cut, and Paste support in the designer tree so items can be copied or moved between screens without using the code editor.
+* Fixed paste behavior so screens/items are inserted below the highlighted screen/item instead of always at the end.
+* Fixed designer-tree move/copy/cut/paste to work with screens and panels loaded from included XML files such as `skin_templates.xml`.
+* Fixed code-panel editing and saving for screens/panels inside included XML files.
+* Fixed Cut/Paste ghost-item issue where the XML was moved but the old item remained visible in the left tree.
+* Fixed repeated unsaved-changes prompts after moving or pasting items; the warning now appears only when closing/opening/reloading before saving.
+* Added Ctrl+click multi-select support in the designer preview panel.
+* Added visible multi-selection outlines in the preview panel.
+* Added group dragging so multiple selected items within the same screen can be moved together.
+* Fixed designer preview crashes caused by invalid or unresolved pixmap/widget image sizes.
 
-### Added
-- Added support for Enigma2-style `backgroundColor` gradients on `eLabel` and label-style widgets.
-- Added support for 3-part and 4-part gradient syntax:
-  - `backgroundColor="#00101010,#00303030,vertical"`
-  - `backgroundColor="red,green,vertical"`
-  - `backgroundColor="#00101010,#00202020,#00303030,vertical"`
-- Added support for preserving extended `cornerRadius` syntax:
-  - `cornerRadius="30;topLeft,topRight"`
-  - `cornerRadius="30;bottomLeft,bottomRight"`
-  - `cornerRadius="30;left"`
-  - `cornerRadius="30;right"`
-- Added property-grid controls for corner radius size and corner direction presets.
-- Added property-grid controls for gradient start, middle, end, and direction values.
-- Added progress widget controls for separate background and foreground colors.
-- Added progress foreground gradient controls: start color, middle color, end color, and direction.
-- Added listbox controls for normal and selected item gradients, item corner radius, selected item corner radius, selection index, selection zoom, list orientation, item spacing, and move colors.
-- Added scrollbar preview support for width, offset, radius, foreground color, background color, border color, and border width.
-- Added Arabic language file support in the language folder.
+### v4.2.1.0 MOD by odem2014
+created by [odem2014](https://github.com/odem2014)
+* Updated application title/version to `OpenSkin Designer MOD by odem2014 v4.2.1.0`.
+* Added property-grid controls for corner radius size and corner direction presets.
+* Added property-grid controls for label gradient start/middle/end colors and gradient direction.
+* Added progress widget background and foreground color controls, including foreground gradient start/middle/end/direction fields.
+* Added support for slider-style widgets without `render="Progress"` to preview and edit like progress bars.
+* Improved Listbox property-grid control for normal/selected item gradients, item corner radius, selected item radius, selection index, wrap-around, and foreground/background colors.
+* Improved Listbox grid preview support for `listOrientation="grid"`, `itemWidth`, `itemHeight`, `itemSpacing`, `selectionZoom`, `moveBackgroundColor`, and `moveFontColor`.
+* Fixed Listbox scrollbar preview for `scrollbarWidth`, `scrollbarOffset`, `scrollbarRadius`, `scrollbarForegroundColor`, `scrollbarBackgroundColor`, `scrollbarBorderColor`, and `scrollbarBorderWidth`.
+* Fixed null-gradient crashes in Listbox preview by safely falling back when a gradient is incomplete.
+* Fixed invalid pixmap/widget preview image sizes so the designer no longer crashes while resizing bad or unresolved preview images.
+* Added build copy support so runtime folders such as `skins`, `elements`, `languages`, and `fonts` are copied to the output folder.
 
-### Changed
-- Updated app title/product name to `OpenSkin Designer MOD by odem2014`.
-- Updated assembly version and file version to `4.2.1.0`.
-- Improved property-grid refresh behavior so new custom fields update XML, editor text, and preview immediately.
-- Improved build output behavior so runtime folders such as `skins`, `elements`, `languages`, and `fonts` are copied into `bin` output folders.
-- Improved listbox preview for vertical and grid layouts.
-- Improved scrollbar preview rendering and clipping behavior.
-
-### Fixed
-- Fixed saving of comma-separated gradient values that start with `#`.
-- Fixed color parsing so gradient values are not treated as invalid single hex colors.
-- Fixed saving of `cornerRadius="30;topLeft,topRight"` without reducing it to only `30`.
-- Fixed preview rendering so corner-radius masks only round the selected corners.
-- Fixed progress preview for gradient `foregroundColor` values such as `green,yellow,red,horizontal`.
-- Fixed listbox selected item preview for `itemGradientSelected` and `itemCornerRadiusSelected`.
-- Fixed listbox grid preview for `listOrientation="grid"`, `itemSpacing`, and `selectionZoom`.
-- Fixed scrollbar radius preview for `scrollbarRadius`.
-- Fixed null-gradient crashes in listbox preview.
-- Fixed EventTime converter preview crashes when preview source data is missing.
-- Cleaned bundled ScintillaNET build warnings without changing runtime behavior.
-
-### Notes
-- Existing normal color values such as `backgroundColor="#00ffffff"` and `backgroundColor="red"` continue to work.
-- Existing simple radius values such as `cornerRadius="30"` continue to round all corners.
-- Keep the project target as `x86` when using the bundled old ScintillaNET/SciLexer components.
+### v4.2.0.0 MOD by odem2014
+created by [odem2014](https://github.com/odem2014)
+* Updated application title/version to `OpenSkin Designer MOD by odem2014 v4.2.0.0`.
+* Added support for `eLabel` `backgroundColor` gradients written as `startColor,endColor,direction`.
+* Added support for HEX gradient syntax, including `#00101010,#00303030,vertical` and `#00ff0000,#0000ff00,vertical`.
+* Added support for named-color gradients, for example `red,green,vertical`.
+* Fixed color parsing so comma-separated gradient values are not treated as invalid single colors.
+* Added support for preserving extended `cornerRadius` values such as `30;topLeft,topRight`.
+* Fixed saving so gradient `backgroundColor` and masked `cornerRadius` values round-trip correctly.
+* Fixed preview rendering so `cornerRadius` edge masks are shown correctly instead of rounding all four corners.
