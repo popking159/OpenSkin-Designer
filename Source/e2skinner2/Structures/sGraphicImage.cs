@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -173,17 +173,47 @@ namespace OpenSkinDesigner.Structures
             if (pImage != null)
             {
                 Graphics g = e.Graphics;
-                g.DrawImageUnscaledAndClipped(pImage, new Rectangle((int)pX, (int)pY, pWidth < pImage.Width ? (int)pWidth : pImage.Width, pHeight < pImage.Height ? (int)pHeight : pImage.Height));
+                int drawWidth = pWidth < pImage.Width ? (int)pWidth : pImage.Width;
+                int drawHeight = pHeight < pImage.Height ? (int)pHeight : pImage.Height;
+
+                // v4.2.2.0 MOD:
+                // Do not let invalid/unresolved pixmap sizes crash the designer preview.
+                if (drawWidth <= 0 || drawHeight <= 0)
+                    return;
+
+                g.DrawImageUnscaledAndClipped(pImage, new Rectangle((int)pX, (int)pY, drawWidth, drawHeight));
             }
         }
 
         private Image ResizeImage(Image imgToResize, int Width, int Height)
         {
-            return (Image)(new Bitmap(imgToResize, new Size(Width, Height)));
+            // v4.2.2.0 MOD:
+            // Guard against unresolved/invalid skin sizes. GDI+ throws
+            // ArgumentException when Bitmap is created with width/height <= 0.
+            if (imgToResize == null)
+                return null;
+
+            if (Width <= 0 || Height <= 0)
+                return imgToResize;
+
+            try
+            {
+                return (Image)(new Bitmap(imgToResize, new Size(Width, Height)));
+            }
+            catch (ArgumentException)
+            {
+                return imgToResize;
+            }
         }
 
         private Image ResizeImageKeepAspectRatio(Image imgPhoto, int Width, int Height)
         {
+            if (imgPhoto == null)
+                return null;
+
+            if (Width <= 0 || Height <= 0 || imgPhoto.Width <= 0 || imgPhoto.Height <= 0)
+                return imgPhoto;
+
             int sourceWidth = imgPhoto.Width;
             int sourceHeight = imgPhoto.Height;
             int sourceX = 0;
